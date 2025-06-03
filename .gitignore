@@ -32,3 +32,6 @@ dmypy.json
 
 # VSCODE IDE
 .vscode
+
+# SPYDER
+.spyproject

@@ -26,10 +26,11 @@ def test_get_forecast_office():
 #test_get_forecast_office()
 
 def test_get_forecast():
-    df = Data_Fetcher("Raleigh")
-    forecast_discussion, forecast_discussion_time = df.get_forecast()
+    df = Data_Fetcher("Kansas City")
+    forecast = df.get_forecast()
 
-    print(forecast_discussion)
-    print(forecast_discussion_time)
+    print(forecast)
+    return forecast
 
-test_get_forecast()
+
+data = test_get_forecast()
