@@ -1,0 +1,8 @@
+Forecast Temperature is in Fahrenheit when pulled in Data_Fetcher
+Forecast wind_speed is in MPH 
+Observed Temperature is in Celsius
+Observed Dew Point is in Celsius
+Past rainfall totals are in mm
+Observed Sea Level Pressure is in Pa
+Observed Wind speed is in km/hr
+Observed Wind Direction is in degrees

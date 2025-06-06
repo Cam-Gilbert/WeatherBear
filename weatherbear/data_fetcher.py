@@ -1,5 +1,6 @@
 from weatherbear import user
 import requests
+import math
 from requests.exceptions import HTTPError, Timeout, RequestException
 
 BASE_URL = "https://api.weather.gov"
@@ -25,7 +26,7 @@ class Data_Fetcher:
             print("Failed to get coords")
             return
         
-        forecast_office, gridX, gridY, zone_url = self.get_forecast_office(coords[0], coords[1])
+        forecast_office, gridX, gridY, zone_url, obs_station = self.get_forecast_office(coords[0], coords[1])
 
         # Get Text Forecast Discussion
         text_url = f"{BASE_URL}/products/types/AFD/locations/{forecast_office}/latest"
@@ -66,17 +67,17 @@ class Data_Fetcher:
                 'vtec': params.get('VTEC', [None])[0],  # VTEC hazard code
             }
 
-            # Only care about alerts affecting our zone irl
+            
             organized_alerts.append(organized_alert)
-
+        # Only care about alerts affecting our zone irl
         organized_alerts = [a for a in organized_alerts if zone_id in alert['properties']['geocode']['UGC']]
 
         # Get Weather Forecasts
         url = f"{BASE_URL}/gridpoints/{forecast_office}/{gridX},{gridY}/forecast"
-        data = self.make_request(url, USER_AGENT)
+        forecast_data = self.make_request(url, USER_AGENT)
         daily_forecasts = []
 
-        for period in data['properties']['periods']:
+        for period in forecast_data['properties']['periods']:
             forecast = {
                 'name': period['name'],
                 'start_time': period['startTime'],
@@ -92,7 +93,12 @@ class Data_Fetcher:
             }
             daily_forecasts.append(forecast)
 
-        return daily_forecasts
+        # Get closest observations
+        obs_id = obs_station['properties']['stationIdentifier']
+        url = f"{BASE_URL}/stations/{obs_id}/observations/latest"
+        obs_data = self.make_request(url, USER_AGENT)
+
+        return forecast_discussion, organized_alerts, daily_forecasts, obs_data
         
 
 
@@ -114,14 +120,26 @@ class Data_Fetcher:
         
         url = f"{BASE_URL}/points/{lat},{lon}"
         data = self.make_request(url, USER_AGENT)
-        
+       
         if data:
             office = data['properties']['forecastOffice']
             gridX = data['properties']['gridX']
             gridY = data['properties']['gridY']
             zone_url = data['properties']['forecastZone']
+            obs_stations = self.make_request(data['properties']['observationStations'], USER_AGENT)
             office = office[-3:]
-            return office, gridX, gridY, zone_url
+            
+            closest_station = None
+            min_dist = math.inf
+            # find which obs station is closest to provided user location
+            for station in obs_stations['features']:
+                station_coords = station['geometry']['coordinates']
+                dist = self.haversine(lon, lat, station_coords[0], station_coords[1])
+                if dist < min_dist:
+                    min_dist = dist
+                    closest_station = station
+
+            return office, gridX, gridY, zone_url, closest_station
         else:
             print("Failed to Retrieve Data")
 
@@ -141,3 +159,13 @@ class Data_Fetcher:
             print(f"Request error: {req_err}")
         
         return None
+    
+    def haversine(self, lon1, lat1, lon2, lat2):
+        lon1, lat1, lon2, lat2 = map(math.radians, [lon1, lat1, lon2, lat2])
+
+        dlon = lon2- lon1
+        dlat = lat2 - lat1
+        a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
+        c = 2 * math.asin(math.sqrt(a))
+        r = 6371
+        return c * r

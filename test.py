@@ -19,18 +19,18 @@ def test_get_forecast_office():
         print("Failed to get coordinates.")
 
     office = df.get_forecast_office(coords[0], coords[1])
-
+    
     print(office)
+    return office
 
 
-#test_get_forecast_office()
+#data = test_get_forecast_office()
 
 def test_get_forecast():
-    df = Data_Fetcher("Kansas City")
-    forecast = df.get_forecast()
+    df = Data_Fetcher("Joplin")
+    forecast_discussion, organized_alerts, daily_forecasts, obs_data = df.get_forecast()
 
-    print(forecast)
-    return forecast
+    return forecast_discussion, organized_alerts, daily_forecasts, obs_data
 
 
-data = test_get_forecast()
+forecast_discussion, organized_alerts, daily_forecasts, obs_data = test_get_forecast()
