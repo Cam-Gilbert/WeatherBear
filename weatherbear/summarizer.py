@@ -1,4 +1,6 @@
-class summarizer:
+import requests
+
+class Summarizer:
     def __init__(self, weather_knowledge, afd):
         self.weather_knowledge = weather_knowledge
         self.afd = afd
@@ -15,8 +17,7 @@ class summarizer:
                                 Avoid long lists of temperatures or chance-of-rain percentages.
                                 Maintain a consistent tone and structure.
 
-                                Here is the AFD text to summarize:\n"""
-            prompt_string = prompt_string + self.afd
+                                The AFD will be entered into the chat\n"""
             
         elif self.weather_knowledge == "moderate":
             prompt_string = """You are a meteorologist and educator. Your task is to write a clear, structured weather summary for a general audience based on the latest NWS Area Forecast Discussion (AFD). Your summary should explain what the weather will be and what is causing it, with a focus on today, tonight, and tomorrow. You may briefly mention days 2-4 only if significant weather is forecast. 
@@ -29,8 +30,8 @@ class summarizer:
                                 Avoid long lists of temperatures or chance-of-rain percentages.
                                 Maintain a consistent tone and structure.
 
-                                Here is the AFD text to summarize:\n"""
-            prompt_string = prompt_string + self.afd
+                                The AFD will be entered into the chat\n"""
+            
         elif self.weather_knowledge == "none":
             prompt_string = """You are a meteorologist and educator. Your task is to write a clear, structured weather summary for a general audience based on the latest NWS Area Forecast Discussion (AFD). Your summary should explain what the weather will be and what is causing it, with a focus on today, tonight, and tomorrow. You may briefly mention days 2-4 only if significant weather is forecast. 
                                 
@@ -42,8 +43,15 @@ class summarizer:
                                 Avoid long lists of temperatures or chance-of-rain percentages.
                                 Maintain a consistent tone and structure.
 
-                                Here is the AFD text to summarize:\n"""
-            prompt_string = prompt_string + self.afd
+                                The AFD will be entered into the chat\n"""
 
+        afd = "Here is the AFD text to summarize:\n" + self.afd
 
         ### Pass Message to LLM and return response
+        messages = [{"role": "system", "content": prompt_string},
+                    {"role": "user", "content": afd}]
+        
+        response = requests.post("http://127.0.0.1:5000/openai", json={"messages": messages})
+
+        return response.json().get("summary")
+

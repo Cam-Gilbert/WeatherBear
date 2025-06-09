@@ -1,4 +1,5 @@
 from weatherbear.data_fetcher import Data_Fetcher
+from weatherbear.summarizer import Summarizer
 
 def test_get_latlon():
     df = Data_Fetcher("28394")
@@ -33,4 +34,16 @@ def test_get_forecast():
     return forecast_discussion, organized_alerts, daily_forecasts, obs_data
 
 
-forecast_discussion, organized_alerts, daily_forecasts, obs_data = test_get_forecast()
+##forecast_discussion, organized_alerts, daily_forecasts, obs_data = test_get_forecast()
+
+def test_summarizer():
+    df = Data_Fetcher("Raleigh")
+    forecast_discussion, organized_alerts, daily_forecasts, obs_data = df.get_forecast()
+
+    summarizer = Summarizer("expert", forecast_discussion)
+    summary = summarizer.generate_Message()
+
+    return summary
+
+summary = test_summarizer()
+print(summary)

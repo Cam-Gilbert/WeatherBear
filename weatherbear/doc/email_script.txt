@@ -3,10 +3,10 @@ if there is a heat index
 Hello {user.name}, it is currently {obs.temp} and {obs.dewpoint}, for a feels-like temperature of {obs.heatIndex} at {obs.location} with {obs.clouds} skies. 
 
 if there is a wind chill
-Hello {user.name}, it is currently {obs.temp} and {obs.dewpoint}, for a feels-like temperature of {obs.heatIndex} at {obs.location} with {obs.clouds} skies. 
+Hello {user.name}, it is currently {obs.temp} and {obs.dewpoint}, for a feels-like temperature of {obs.windchill} at {obs.location} with {obs.clouds} skies. 
 
 if there neither
-Hello {user.name}, it is currently {obs.temp} and {obs.dewpoint}, for a feels-like temperature of {obs.heatIndex} at {obs.location} with {obs.clouds} skies. 
+Hello {user.name}, it is currently {obs.temp} and {obs.dewpoint} at {obs.location} with {obs.clouds} skies. 
 
 if there has been rain in the last hour, append to string
 There has been {obs.lastHourPrecip} of precipitation in the past hour, and {obs.last3HourPrecip} in the past 6 hours

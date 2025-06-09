@@ -28,7 +28,7 @@ class User:
     def units(self, value):
         if value not in ("metric", "imperial"):
             raise ValueError("units must be either metric (C) or imperial (F)")
-        self.preferences["units"] = value
+        self.preferences["units"] = value.lower()
 
     @property
     def weather_knowledge(self):

@@ -15,10 +15,10 @@ class Data_Fetcher:
         This function will use the NWS API to grab the following products
         Text Forecast Discussion for the region - check
         Forecasted High and Low Temperatures - check 
-        Forecasted Feels-Like Temperatures
+        Forecasted Feels-Like Temperatures - check
         Forecasted Precipitation Amounts and General Timing (Whatever I can find from the API)
         Any Watches/Warnings in the area for the specific time - check
-        Current obs at closest observation station
+        Current obs at closest observation station - check
         '''
         # Get inital data
         coords = self.get_latlon()
