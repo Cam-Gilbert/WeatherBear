@@ -36,6 +36,6 @@ class User:
     
     @weather_knowledge.setter
     def weather_knowledge(self, value):
-        if value not in ("none", "moderate", "expert"):
+        if value.lower() not in ("none", "moderate", "expert"):
             raise ValueError("level of weather knowledge must be either none, moderate, or expert")
-        self.preferences["weather_knowledge"] = value
+        self.preferences["weather_knowledge"] = value.lower()

@@ -28,7 +28,7 @@ class Data_Fetcher:
         
         forecast_office, gridX, gridY, zone_url, obs_station = self.get_forecast_office(coords[0], coords[1])
 
-        # Get Text Forecast Discussion
+        # Get Text Forecast Discussion - May consider trimming this string at the start, save tokens passing into LLM $$$
         text_url = f"{BASE_URL}/products/types/AFD/locations/{forecast_office}/latest"
         text_data = self.make_request(text_url, USER_AGENT)
         forecast_discussion = text_data['productText']
