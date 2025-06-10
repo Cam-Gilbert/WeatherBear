@@ -40,7 +40,7 @@ def test_summarizer():
     df = Data_Fetcher("Raleigh")
     forecast_discussion, organized_alerts, daily_forecasts, obs_data = df.get_forecast()
 
-    summarizer = Summarizer("expert", forecast_discussion)
+    summarizer = Summarizer("moderate", forecast_discussion)
     summary = summarizer.generate_Message()
 
     return summary

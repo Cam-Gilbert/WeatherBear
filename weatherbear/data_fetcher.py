@@ -1,24 +1,39 @@
-from weatherbear import user
 import requests
 import math
 from requests.exceptions import HTTPError, Timeout, RequestException
 
 BASE_URL = "https://api.weather.gov"
+''' The base url for all nws api interactions'''
 USER_AGENT = "WeatherBearApp"
+''' Username for interacting with NWS and openstreetmap API'''
 
 class Data_Fetcher:
+    '''
+    Data_Fetcher Class. It handles all of the interactions with the NWS api and pulling data. Contains several
+    methods but the main method is get_forecast(), it returns all of the data that is needed to generate emails 
+    and interact with the LLM
+    '''
     def __init__(self, location):
+        '''
+        Data_Fetcher object initialization method (constructor)
+
+        @param location users zipcode, city, address, etc...
+        '''
         self.location = location
 
     def get_forecast(self):
         '''
-        This function will use the NWS API to grab the following products
+        Main function of this class. This function will use the NWS API to grab the following products
         Text Forecast Discussion for the region - check
         Forecasted High and Low Temperatures - check 
         Forecasted Feels-Like Temperatures - check
-        Forecasted Precipitation Amounts and General Timing (Whatever I can find from the API)
         Any Watches/Warnings in the area for the specific time - check
         Current obs at closest observation station - check
+
+        @return forecast_discussion string containing the most recent forecast discussion
+        @return organized_alerts string containing any warnings in the area
+        @return daily_forecasts the daily forecast information
+        @return obs_data the most recent observation info from the closest station
         '''
         # Get inital data
         coords = self.get_latlon()
@@ -103,6 +118,12 @@ class Data_Fetcher:
 
 
     def get_latlon(self):
+        '''
+        Use the open street map api to get a users lat/lon based on an inputted city/zipcode
+
+        @return the station lat lon in an array data[0] = 'lat' data[1] = 'lon'
+        '''
+
         url = f"https://nominatim.openstreetmap.org/search?q={self.location}&format=json&limit=1"
         try:
             response = requests.get(url, headers={"User-Agent": "WeatherBearApp/1.0"})
@@ -117,7 +138,18 @@ class Data_Fetcher:
             return None
         
     def get_forecast_office(self, lat, lon):
-        
+        '''
+        Makes a request to the NWS api and gathers the closest forecast office, the stations grid points,
+        the closest obs station, and the warning zone info
+
+        @param lat latitude of user
+        @param lon longitude of user
+        @return office the forecast office
+        @return gridX stations x grid point
+        @return gridY stations y grid point
+        @return zone_url the warning zone
+        @return closest_station the closest obs station
+        '''
         url = f"{BASE_URL}/points/{lat},{lon}"
         data = self.make_request(url, USER_AGENT)
        
@@ -145,6 +177,12 @@ class Data_Fetcher:
 
         
     def make_request(self, endpoint, user_agent):
+        '''
+        Helper function that makes api requests to NWS API
+
+        @param endpoint the url of api at desired point
+        @param user_agent a username that is used when calling api
+        '''
         headers = {"User-Agent": user_agent}
         try:
             response = requests.get(endpoint, headers=headers)
@@ -161,6 +199,15 @@ class Data_Fetcher:
         return None
     
     def haversine(self, lon1, lat1, lon2, lat2):
+        '''
+        Haversine function to used determine the distance to the closest station
+
+        @param lon1 - longitude of user location
+        @param lat1 - latitude of user location
+        @param lon2 - longitude of station 1
+        @param lat2 - latitude of station 1
+        @return the distance between points
+        '''
         lon1, lat1, lon2, lat2 = map(math.radians, [lon1, lat1, lon2, lat2])
 
         dlon = lon2- lon1
