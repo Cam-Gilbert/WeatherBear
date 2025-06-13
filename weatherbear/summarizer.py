@@ -39,7 +39,7 @@ class Summarizer:
                                 Write for this specific audience level: Moderate – For weather enthusiasts or TV-weather-savvy readers. Use plain language with light explanations of weather features (e.g., “a weak front will bring…”). Include some causes and effects without overwhelming detail.
 
                                 Each version should be 1-2 concise paragraphs.
-                                Always explain key features driving the weather (e.g., fronts, upper-level disturbances, instability, etc.).
+                                Always explain key features driving the weather (limit jargon to cold fronts, warm fronts, high, and low pressure systems).
                                 Do not copy and paste from the AFD—synthesize and explain, but you may use it.
                                 Avoid long lists of temperatures or chance-of-rain percentages.
                                 Do not make any information up, everything you output must be pulled from the provided forecast discussion
@@ -52,7 +52,7 @@ class Summarizer:
                                 Write for this specific audience level: Moderate – For weather enthusiasts or TV-weather-savvy readers. Use plain language with light explanations of weather features (e.g., “a weak front will bring…”). Include some causes and effects without overwhelming detail.
 
                                 Each version should be 1-2 concise paragraphs.
-                                Attempt explain key features driving the weather (e.g., fronts, upper-level disturbances, instability, etc.).
+                                Attempt explain key features driving the weather (limit jargon to cold fronts, warm fronts, high, and low pressure systems).
                                 Do not copy and paste from the AFD—synthesize and explain, but you may use it.
                                 Avoid long lists of temperatures or chance-of-rain percentages.
                                 Do not make any information up, everything you output must be pulled from the provided forecast discussion

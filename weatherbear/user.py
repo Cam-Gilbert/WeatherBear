@@ -1,6 +1,8 @@
 import re
 from timezonefinder import TimezoneFinder
 from geopy.geocoders import Nominatim
+import requests
+from requests.exceptions import HTTPError, Timeout, RequestException
 from zoneinfo import ZoneInfo
 from datetime import datetime, timezone
 
@@ -61,7 +63,7 @@ class User:
 
     @property
     def times_sent(self):
-        return self.preferences.get(["times_sent"], [])
+        return self.preferences.get("times_sent", [])
     
     @times_sent.setter
     def times_sent(self, value):
@@ -71,20 +73,27 @@ class User:
         self.preferences["times_sent"] = value
 
     def get_time_zone(self):
-        ''' Users geopy geolocator to find users timezone based on location'''
-        ## I am really not sure how this part works
+        '''Uses OpenStreetMap API to get lat/lon and then TimezoneFinder to get timezone'''
         try:
-            # get location
-            location = _geolocator.geocode(self.location)
-            if not location:
-                raise ValueError(f"Coudl not geocode location at {self.location}")
-            # get timezone
-            tz = _tz_finder.timezone_at(lat=location.latitude, lon = location.longitude)
+            url = f"https://nominatim.openstreetmap.org/search?q={self.location}&format=json&limit=1"
+            response = requests.get(url, headers={"User-Agent": "WeatherBearApp/1.0"})
+            response.raise_for_status()
+            data = response.json()
+
+            if not data:
+                raise ValueError(f"Could not find location for: {self.location}")
+
+            lat = float(data[0]["lat"])
+            lon = float(data[0]["lon"])
+
+            tz = _tz_finder.timezone_at(lat=lat, lng=lon)
             if not tz:
-                raise ValueError(f"Coudl not geocode location at {self.location}")
-        except Exception as e:
-            print(f"Failed timezone detection at {self.location}")
-            # UTC default
+                raise ValueError(f"Could not determine timezone for location: {self.location}")
+
+            return tz
+
+        except (HTTPError, Timeout, RequestException, ValueError) as e:
+            print(f"⚠️ Failed timezone detection at {self.location}: {e}")
             return "UTC"
         
     def should_get_email(self, now_utc=None):

@@ -36,3 +36,6 @@ dmypy.json
 
 # SPYDER
 .spyproject
+
+# User info
+users.json

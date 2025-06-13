@@ -1,26 +1,30 @@
 import json
 import time
 from datetime import datetime
-from weatherbear.data_fetcher import Data_Fetcher
-from weatherbear.summarizer import Summarizer
-from weatherbear.emailer import Emailer
-from weatherbear.user import User
-
-
+from data_fetcher import Data_Fetcher
+from summarizer import Summarizer
+from emailer import Emailer
+from user import User
 
 def main_loop():
     while True:
         users = load_users()
+        changes_made = False
 
         for user in users:
-            if check_should_send(user):
+            if user.should_get_email():
                 send_email_to_user(user)
+                print(f"Email sent to {user.email}")
+                changes_made = True
+
+        if changes_made:
+            save_users(users)
 
         # sleep for one hour before checking if sending is necessary again
         time.sleep(3600)
 
 
-def load_users(path="users.json"):
+def load_users(path="weatherbear/users.json"):
     ''' responsible for loading users from users.json '''
     try:
         with open(path, "r") as f:
@@ -29,6 +33,22 @@ def load_users(path="users.json"):
     except Exception as e:
         print(f"Failed to load users: {e}")
         return []
+    
+def save_users(users, path="users.json"):
+    ''' Saves users from the user dictionary into the users.json file for storage '''
+    try:
+        user_dicts = []
+        for user in users:
+            user_dicts.append({
+                "name": user.name,
+                "location": user.location,
+                "email": user.email,
+                "preferences": user.preferences
+            })
+        with open(path, "w") as f:
+            json.dump(user_dicts, f, indent=2)
+    except Exception as e:
+        print(f"failed to save users: {e}")
     
 def send_email_to_user(user):
     '''
@@ -46,11 +66,6 @@ def send_email_to_user(user):
         emailer.send_email()
     except Exception as e:
         print(f"Failed to send email to {user.email}: {e}")
-
-def check_should_send(user):
-    now = datetime.now()
-
-    return now.hour in [7, 19] and now.minute == 0
 
 if __name__ == "__main__":
     main_loop()
