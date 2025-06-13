@@ -88,6 +88,8 @@ class Summarizer:
                                 The area forecast discussion is as follows\n"""
 
 
+        afd += "\n" + self.afd
+
         ### Pass Message to LLM and return response
         messages = [{"role": "system", "content": prompt_string},
                     {"role": "user", "content": afd}]
