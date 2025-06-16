@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import openai
 import os
 from dotenv import load_dotenv
@@ -24,3 +24,19 @@ def proxy_openai():
         return jsonify({"summary": content})
     except Exception as e:
         return jsonify({"Error": str(e)}), 500
+    
+# ✅ New routes to serve your HTML pages:
+@app.route("/")
+def homepage():
+    return render_template("homepage.html")
+
+@app.route("/signup")
+def signup():
+    return render_template("signup.html")
+
+@app.route("/emailbot")
+def emailbot():
+    return render_template("emailbot.html")
+
+if __name__ == "__main__":
+    app.run(debug=True)

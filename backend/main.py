@@ -14,7 +14,6 @@ def main_loop():
         for user in users:
             if user.should_get_email():
                 send_email_to_user(user)
-                print(f"Email sent to {user.email}")
                 changes_made = True
 
         if changes_made:
@@ -24,7 +23,7 @@ def main_loop():
         time.sleep(3600)
 
 
-def load_users(path="weatherbear/users.json"):
+def load_users(path="users.json"):
     ''' responsible for loading users from users.json '''
     try:
         with open(path, "r") as f:
@@ -34,7 +33,7 @@ def load_users(path="weatherbear/users.json"):
         print(f"Failed to load users: {e}")
         return []
     
-def save_users(users, path="weatherbear/users.json"):
+def save_users(users, path="users.json"):
     ''' Saves users from the user dictionary into the users.json file for storage '''
     try:
         user_dicts = []
@@ -55,15 +54,19 @@ def send_email_to_user(user):
     Executes the process of sending an email to the specified user object
     '''
     try:
+        print("Gathering Data")
         # Collect Data
         df = Data_Fetcher(user.location)
         forecast_discussion, organized_alerts, daily_forecasts, obs_data = df.get_forecast()
         # Summarize response
         summarizer = Summarizer(user.preferences["weather_knowledge"], forecast_discussion)
+        print("Generating Summary")
         summary = summarizer.generate_Message()
         # Generate and send email
         emailer = Emailer(user, obs_data, daily_forecasts, organized_alerts, summary)
+        print(f"Generating Email")
         emailer.send_email()
+        print(f"Email sent to {user.email}")
     except Exception as e:
         print(f"Failed to send email to {user.email}: {e}")
 
