@@ -34,7 +34,7 @@ def load_users(path="weatherbear/users.json"):
         print(f"Failed to load users: {e}")
         return []
     
-def save_users(users, path="users.json"):
+def save_users(users, path="weatherbear/users.json"):
     ''' Saves users from the user dictionary into the users.json file for storage '''
     try:
         user_dicts = []

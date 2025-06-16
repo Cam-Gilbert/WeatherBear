@@ -1,2 +1,0 @@
-requests==2.32.3  # Used for API calls to weather.gov
-openai==1.85.0  # Used for AI summaries
