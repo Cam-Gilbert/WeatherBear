@@ -10,6 +10,7 @@ app = Flask(__name__)
 
 @app.route("/openai", methods=["POST"])
 def proxy_openai():
+    ''' Function to interact with openai api '''
     try:
         text = request.get_json()
         messages = text.get("messages")
@@ -28,15 +29,30 @@ def proxy_openai():
 # ✅ New routes to serve your HTML pages:
 @app.route("/")
 def homepage():
+    ''' Routing for the homepage html page '''
     return render_template("homepage.html")
 
 @app.route("/emailbot")
 def emailbot():
+    ''' Routing for the emailbot html page '''
     return render_template("emailbot.html")
 
 @app.route("/about")
 def about():
+    ''' Routing for the about html page '''
     return render_template("about.html")
+
+@app.route("/set_location", methods=["POST"])
+def set_location():
+    ''' Routing for the get location function'''
+    data = request.get_json()
+    latitude = data.get("latitude")
+    longitude = data.get("longitude")
+    
+    print(f"Received location: lat={latitude}, lon={longitude}")
+
+    # Optionally, you can store this in session, database, etc.
+    return {"status": "success"}, 200
 
 if __name__ == "__main__":
     app.run(debug=True)

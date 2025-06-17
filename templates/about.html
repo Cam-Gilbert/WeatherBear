@@ -1,13 +1,41 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white">
-  <div class="bg-white shadow-xl rounded-2xl p-10 w-full max-w-xl text-center">
-    <h1 class="text-4xl font-extrabold mb-4 text-blue-700">Welcome to WeatherBear</h1>
-    <p class="text-lg text-gray-600 mb-6">Your personalized, AI-powered weather forecast. Delivered daily.</p>
-    <a href="/emailbot" class="inline-block px-6 py-3 bg-blue-600 text-white text-lg font-medium rounded-xl hover:bg-blue-700 transition">
-      Sign Up for Forecasts
-    </a>
+
+<div class="max-w-7xl mx-auto mt-10 space-y-12 px-4">
+
+  <!-- WeatherBear Section -->
+  <div class="flex flex-col md:flex-row bg-white rounded-xl shadow-lg p-8 min-h-[200px] items-center justify-between w-full">
+    <!-- Logo on Left -->
+    <div class="flex-shrink-0 mb-4 md:mb-0 md:mr-8">
+      <img src="{{ url_for('static', filename='assets/black_weatherBear.png') }}" alt="WeatherBear Logo" class="h-55 w-auto">
+    </div>
+
+    <!-- Text -->
+    <div class="text-center md:text-left flex-1">
+      <h2 class="text-3xl font-bold text-gray-800 mb-3">WeatherBear</h2>
+      <p class="text-gray-600 text-lg leading-relaxed">
+        About, blah blah blah.
+      </p>
+    </div>
   </div>
+
+  <!-- Developer Section -->
+  <div class="flex flex-col md:flex-row bg-white rounded-xl shadow-lg p-8 min-h-[200px] items-center justify-between w-full">
+    <!-- Text -->
+    <div class="text-center md:text-left flex-1 md:mr-8">
+      <h2 class="text-3xl font-bold text-gray-800 mb-3">About the Developer</h2>
+      <p class="text-gray-600 text-lg leading-relaxed">
+        My name is Cameron, I have a degree in Meteorology with a minor in Computer Programming from North Carolina State University. Go Wolfpack! I am 
+        currently an atmospheric science graduate student at the University at Albany, NY. 
+      </p>
+    </div>
+
+    <!-- Photo -->
+    <div class="flex-shrink-0 mt-6 md:mt-0">
+      <img src="{{ url_for('static', filename='assets/my_photo.jpeg') }}" alt="Cameron Photo" class="h-55 w-55 rounded-xl shadow-md object-cover">
+    </div>
+  </div>
+
 </div>
-</div>
+
 {% endblock %}

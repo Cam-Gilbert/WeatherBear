@@ -1,13 +1,66 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white">
-  <div class="bg-white shadow-xl rounded-2xl p-10 w-full max-w-xl text-center">
-    <h1 class="text-4xl font-extrabold mb-4 text-blue-700">Welcome to WeatherBear</h1>
-    <p class="text-lg text-gray-600 mb-6">Your personalized, AI-powered weather forecast. Delivered daily.</p>
-    <div class="bg-red-500 text-white p-4 rounded shadow">
-        Please let a red box show up.
+<div class="max-w-7xl mx-auto mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+
+  <!-- Left Panel: Summary / Signup -->
+  <div class="md:col-span-1 bg-white rounded-lg shadow p-4">
+    {% if not location_provided %}
+    <!-- Temporary Signup -->
+    <h2 class="text-xl font-semibold mb-4">Welcome to WeatherBear</h2>
+    <form method="POST" action="/submit-location" id="location-form">
+      <div id="manual-location" class="mb-4">
+        <label class="block text-sm font-medium mb-1" for="location">Your Location</label>
+        <input class="w-full border rounded px-3 py-2" type="text" name="location" id="location" placeholder="City or ZIP code" required>
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1" for="expertise">Weather Knowledge Level</label>
+        <select class="w-full border rounded px-3 py-2" name="expertise" id="expertise">
+          <option value="novice">Novice</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="expert">Expert</option>
+        </select>
+      </div>
+      <!-- Hidden inputs for geolocation fallback -->
+      <input type="hidden" name="latitude" id="latitude">
+      <input type="hidden" name="longitude" id="longitude">
+      <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" type="submit">Get Forecast</button>
+    </form>
+    <p class="text-sm text-gray-500 mt-2" id="geo-status">Attempting to detect your location...</p>
+
+    {% else %}
+    <!-- Weather Summary -->
+    <h2 class="text-xl font-semibold mb-4">Forecast Summary</h2>
+    <p class="mb-4">Summary text about today's forecast based on user expertise level.</p>
+    {% endif %}
+  </div>
+
+  <!-- Right Panel: Forecast Sections -->
+  <div class="md:col-span-2 space-y-6">
+    <!-- Summarized Forecast -->
+    <div class="bg-white rounded-lg shadow p-4">
+      <h3 class="text-lg font-semibold mb-2">Summarized Forecast</h3>
+      <p>Short summary of the day's weather conditions...</p>
+    </div>
+
+    <!-- Current Conditions -->
+    <div class="bg-white rounded-lg shadow p-4">
+      <h3 class="text-lg font-semibold mb-2">Current Conditions</h3>
+      <p>Details on temperature, wind, humidity, etc...</p>
+    </div>
+
+    <!-- Tonight -->
+    <div class="bg-white rounded-lg shadow p-4">
+      <h3 class="text-lg font-semibold mb-2">Tonight</h3>
+      <p>Nighttime forecast conditions...</p>
+    </div>
+
+    <!-- Tomorrow -->
+    <div class="bg-white rounded-lg shadow p-4">
+      <h3 class="text-lg font-semibold mb-2">Tomorrow</h3>
+      <p>Next day forecast details...</p>
     </div>
   </div>
 </div>
-</div>
+
+<script src="{{ url_for('static', filename='js/geolocation.js') }}"></script>
 {% endblock %}

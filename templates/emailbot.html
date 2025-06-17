@@ -2,11 +2,65 @@
 {% block content %}
 <div class="max-w-lg mx-auto mt-10 p-6 bg-white rounded shadow">
   <h2 class="text-2xl font-bold mb-6">Sign Up</h2>
-  <form method="POST" class="space-y-4">
+  <form method="POST" action="/submit-emailbot" id="location-form" class="space-y-4">
     <input type="text" name="name" placeholder="Name" required class="w-full border p-2 rounded" />
     <input type="email" name="email" placeholder="Email" required class="w-full border p-2 rounded" />
-    <input type="text" name="location" placeholder="Location" required class="w-full border p-2 rounded" />
+
+    <div id="manual-location" class="mb-4">
+      <label class="block text-sm font-medium mb-1" for="location">Your Location</label>
+      <input class="w-full border rounded px-3 py-2" type="text" name="location" id="location" placeholder="City or ZIP code" required>
+    </div>
+
+    <!-- Hidden inputs for geolocation fallback -->
+    <input type="hidden" name="latitude" id="latitude">
+    <input type="hidden" name="longitude" id="longitude">
+
+    <div>
+      <label class="block text-sm font-medium mb-1" for="expertise">Weather Knowledge Level</label>
+      <select class="w-full border rounded px-3 py-2" name="expertise" id="expertise">
+        <option value="novice">Novice</option>
+        <option value="intermediate">Intermediate</option>
+        <option value="expert">Expert</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1" for="units">Preferred Units</label>
+      <select class="w-full border rounded px-3 py-2" name="units" id="units">
+        <option value="imperial">Imperial</option>
+        <option value="metric">Metric</option>
+      </select>
+    </div>
+    <!-- Handling choosing times below s-->
+    <div>
+      <label class="block text-sm font-medium mb-1" for="send_times">Preferred Email Times (select 1 to 4):</label>
+      <select name="send_times" id="send_times" multiple required
+              class="w-full border rounded px-3 py-2 h-40 overflow-y-auto">
+        {% for hour in range(0, 24) %}
+          <option value="{{ '%02d:00' % hour }}">{{ '%02d:00' % hour }}</option>
+        {% endfor %}
+      </select>
+      <p class="text-sm text-gray-500 mt-1">Hold Ctrl (or ⌘ on Mac) to select multiple times. Max 4.</p>
+    </div>
+
     <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Submit</button>
   </form>
+
+  <p class="text-sm text-gray-500 mt-2" id="geo-status">Attempting to detect your location...</p>
 </div>
+
+<!-- js logic to prevent users from choosing more than 4 times -->
+<script>
+  const sendTimes = document.getElementById('send_times');
+
+  sendTimes.addEventListener('change', () => {
+    const selected = [...sendTimes.options].filter(option => option.selected);
+    if (selected.length > 4) {
+      selected[selected.length - 1].selected = false;
+      alert("You can only select up to 4 times.");
+    }
+  });
+</script>
+
+<script src="{{ url_for('static', filename='js/geolocation.js') }}"></script>
 {% endblock %}
