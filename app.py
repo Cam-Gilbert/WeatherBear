@@ -30,13 +30,13 @@ def proxy_openai():
 def homepage():
     return render_template("homepage.html")
 
-@app.route("/signup")
-def signup():
-    return render_template("signup.html")
-
 @app.route("/emailbot")
 def emailbot():
     return render_template("emailbot.html")
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -40,5 +40,5 @@ dmypy.json
 # User info
 users.json
 
-# Tailwind exe for development
-tailwindcss.exe
+# node modules for development
+node_modules/

@@ -1,0 +1,27 @@
+{
+  "name": "weatherbear",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cam-Gilbert/WeatherBear.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Cam-Gilbert/WeatherBear/issues"
+  },
+  "homepage": "https://github.com/Cam-Gilbert/WeatherBear#readme",
+  "description": "",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.10",
+    "tailwindcss": "^4.1.10"
+  }
+}
