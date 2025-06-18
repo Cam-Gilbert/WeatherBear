@@ -1,58 +1,116 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="max-w-lg mx-auto mt-10 p-6 bg-white rounded shadow">
-  <h2 class="text-2xl font-bold mb-6">Sign Up</h2>
-  <form method="POST" action="/submit-emailbot" id="location-form" class="space-y-4">
-    <input type="text" name="name" placeholder="Name" required class="w-full border p-2 rounded" />
-    <input type="email" name="email" placeholder="Email" required class="w-full border p-2 rounded" />
+<div class="w-full mx-auto mt-10 px-12 grid grid-cols-1 md:grid-cols-4 gap-8">
 
-    <div id="manual-location" class="mb-4">
-      <label class="block text-sm font-medium mb-1" for="location">Your Location</label>
-      <input class="w-full border rounded px-3 py-2" type="text" name="location" id="location" placeholder="City or ZIP code" required>
+  <!-- About Box -->
+  <div class="md:col-span-3 p-6 bg-white rounded-xl shadow-lg">
+    <h2 class="text-3xl font-bold text-gray-800 mb-3">How the Email Bot Works</h2>
+    <p class="mb-4 text-lg text-gray-600">
+      Each day at your selected times, WeatherBear will send a personalized email forecast based on your location and weather expertise level. The forecast is generated using data sourced from the National Weather Service, and the summary is produced using OpenAI's API to condense the local NWS office's forecast discussion. These Area Forecast Discussions (AFDs) provide detailed insight into the meteorological reasoning NWS forecasters use when creating local forecasts. I find that they are a fantastic resource for those who want more context to their forecast, and they also serve as excellent learning tools to better understand the meteorology behind the predictions. Because AFDs are often filled with jargon that can be difficult to interpret without a meteorological background, OpenAI’s language models help summarize them at varying levels of expertise so that anyone can benefit from them.
+    </p>
+
+    <h3 class="text-2xl font-bold text-gray-800 mb-2">Example Email</h3>
+    <div class="bg-gray-100 border border-gray-300 rounded p-4 text-sm text-gray-800 font-mono whitespace-pre-line">Subject: 🌦️ Daily Weather Update, Cameron
+      
+      Hello Cameron, it is currently 85 degrees F with a dewpoint of 74 F, for a feels-like temperature of 92 F at Raleigh / Durham, Raleigh-Durham International Airport with mostly cloudy skies.
+
+      Today's Forecast:
+      This Afternoon: A chance of showers and thunderstorms after 3pm. Partly sunny, with a high near 89. West wind around 3 mph. Chance of precipitation is 30%. New rainfall amounts between a quarter and half of an inch possible.
+
+      Tonight: Showers and thunderstorms likely before 4am. Mostly cloudy, with a low around 72. South wind around 3 mph. Chance of precipitation is 70%. New rainfall amounts between 1 and 2 inches possible.
+
+      Watches/Warnings in your area:
+
+      Flood Watch issued June 16 at 11:52AM EDT until June 17 at 2:00AM EDT by NWS Raleigh NC
+
+      Summarized forecast discussion:
+
+      A stalled backdoor cold front will dominate the region today and overnight, interacting with several upper-level shortwaves to trigger repeated clusters of thunderstorms capable of producing heavy, training rainfall. This setup is responsible for ongoing flash flooding concerns, especially from southern Nash into Wilson and Edgecombe counties, where localized rainfall totals have approached five inches. The frontal boundary’s exact position will fluctuate with convective outflow boundaries, primarily stretching from southwest Virginia through the Triangle to near Greenville, acting as a focus for additional storm development. Expect high moisture content and multiple rounds of thunderstorms leading to widespread flash flood potential and generally warm highs in the mid-80s to around 90°F south and west of the boundary.
+
+      By Tuesday, the front lifts northward as a warm front under building upper-level ridging, suppressing widespread convection and reducing storm chances to isolated areas mainly in the northwest Piedmont. This ridge intensification contributes to hotter and more humid conditions with highs climbing into the upper 80s and lower 90s, and only scattered afternoon storms possible. Into midweek, persistent ridging and retrograding offshore high pressure will maintain hot and humid weather with limited storm coverage, although a developing mid-latitude trough and cold front approaching late Thursday may increase thunderstorm chances, including isolated stronger storms, mainly along and ahead of the front.
+
+      Stay weahter aware!
+      - WeatherBear 🐻
     </div>
+  </div>
 
-    <!-- Hidden inputs for geolocation fallback -->
-    <input type="hidden" name="latitude" id="latitude">
-    <input type="hidden" name="longitude" id="longitude">
+  <!-- Right Side Column -->
+<div class="md:col-span-1 flex flex-col gap-6">
+  <!-- Sign Up Box -->
+  <div class="p-6 bg-white rounded-xl shadow-lg">
+    <h2 class="text-3xl font-bold text-gray-800 mb-3">Sign Up</h2>
+    <form method="POST" action="/submit-emailbot" id="location-form" class="space-y-4">
+      <input type="text" name="name" placeholder="Name" required class="w-full border p-2 rounded" />
+      <input type="email" name="email" placeholder="Email" required class="w-full border p-2 rounded" />
 
-    <div>
-      <label class="block text-sm font-medium mb-1" for="expertise">Weather Knowledge Level</label>
-      <select class="w-full border rounded px-3 py-2" name="expertise" id="expertise">
-        <option value="novice">Novice</option>
-        <option value="intermediate">Intermediate</option>
-        <option value="expert">Expert</option>
-      </select>
-    </div>
+      <div id="manual-location" class="mb-4">
+        <label class="block text-md font-medium mb-1" for="location">Your Location</label>
+        <input class="w-full border rounded px-3 py-2" type="text" name="location" id="location" placeholder="City or ZIP code" required>
+      </div>
 
-    <div>
-      <label class="block text-sm font-medium mb-1" for="units">Preferred Units</label>
-      <select class="w-full border rounded px-3 py-2" name="units" id="units">
-        <option value="imperial">Imperial</option>
-        <option value="metric">Metric</option>
-      </select>
-    </div>
-    <!-- Handling choosing times below s-->
-    <div>
-      <label class="block text-sm font-medium mb-1" for="send_times">Preferred Email Times (select 1 to 4):</label>
-      <select name="send_times" id="send_times" multiple required
-              class="w-full border rounded px-3 py-2 h-40 overflow-y-auto">
-        {% for hour in range(0, 24) %}
-          <option value="{{ '%02d:00' % hour }}">{{ '%02d:00' % hour }}</option>
-        {% endfor %}
-      </select>
-      <p class="text-sm text-gray-500 mt-1">Hold Ctrl (or ⌘ on Mac) to select multiple times. Max 4.</p>
-    </div>
+      <input type="hidden" name="latitude" id="latitude">
+      <input type="hidden" name="longitude" id="longitude">
 
-    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Submit</button>
-  </form>
+      <div>
+        <label class="block text-md font-medium mb-1" for="expertise">Weather Knowledge Level</label>
+        <select class="w-full border rounded px-3 py-2" name="expertise" id="expertise">
+          <option value="none">Beginner</option>
+          <option value="moderate">Intermediate</option>
+          <option value="expert">Expert</option>
+        </select>
+      </div>
 
-  <p class="text-sm text-gray-500 mt-2" id="geo-status">Attempting to detect your location...</p>
+      <div>
+        <label class="block text-md font-medium mb-1" for="units">Preferred Units</label>
+        <select class="w-full border rounded px-3 py-2" name="units" id="units">
+          <option value="imperial">Imperial</option>
+          <option value="metric">Metric</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-md font-medium mb-1" for="send_times">Preferred Email Times (select 1 to 4):</label>
+        <select name="send_times" id="send_times" multiple required class="w-full border rounded px-3 py-2 h-32 overflow-y-auto">
+          {% for hour in range(0, 24) %}
+            {% set value = "%02d:00" % hour %}
+            {% if hour == 0 %}
+              {% set label = "12:00 AM" %}
+            {% elif hour < 12 %}
+              {% set label = hour|string + ":00 AM" %}
+            {% elif hour == 12 %}
+              {% set label = "12:00 PM" %}
+            {% else %}
+              {% set label = (hour - 12)|string + ":00 PM" %}
+            {% endif %}
+            <option value="{{ value }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+        <p class="text-sm text-gray-500 mt-1">Hold Ctrl (or ⌘ on Mac) to select multiple times. Max 4.</p>
+      </div>
+
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-800">Submit</button>
+    </form>
+
+    <p class="text-sm text-gray-500 mt-2" id="geo-status">Attempting to detect your location...</p>
+  </div>
+
+  <!-- Removal Box -->
+  <div class="p-6 bg-white rounded-xl shadow-lg">
+    <h2 class="text-3xl font-bold text-gray-800 mb-3">Unsubscribe</h2>
+    <p class="mb-4 text-lg text-gray-600">
+      No longer want forecasts? Enter your email address below to unsubscribe from WeatherBear emails.
+    </p>
+    <form method="POST" action="/unsubscribe" class="flex flex-col md:flex-row gap-4 items-start md:items-end">
+      <input type="email" name="unsubscribe_email" placeholder="Your email address"
+            required class="w-full md:w-1/2 border p-2 rounded" />
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-800">Remove Me</button>
+    </form>
+  </div>
 </div>
 
-<!-- js logic to prevent users from choosing more than 4 times -->
+
 <script>
   const sendTimes = document.getElementById('send_times');
-
   sendTimes.addEventListener('change', () => {
     const selected = [...sendTimes.options].filter(option => option.selected);
     if (selected.length > 4) {

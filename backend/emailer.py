@@ -66,7 +66,7 @@ class Emailer:
         email_string += self.forecast[0]['name'] + ": " + self.forecast[0]['detailed_forecast'] + "\n\n"
         email_string += self.forecast[1]['name'] + ": " + self.forecast[1]['detailed_forecast'] + "\n"
 
-        if self.warnings != None:
+        if len(self.warnings) != 0:
             email_string = email_string + "\n" + "Watches/Warnings in your area:\n\n"
             for alert in self.warnings:
                 email_string += alert['headline'] + "\n"
@@ -79,18 +79,14 @@ class Emailer:
         email_string += "\nSummarized forecast discussion: \n\n"
         email_string += self.afd
 
-        email_string += "\n\nHave a great day!\nWeatherBear"
+        email_string += "\n\nStay weather aware!\n- WeatherBear 🐻"
 
         return email_string
-
-
-
-
 
     def send_email(self):
         ''' Handles sending the email '''
         email_body = self.generate_email()
-        email_subject = f"Daily Weather Update, {self.User.name}"
+        email_subject = f"🌦️ Daily Weather Update, {self.User.name}"
 
         message = EmailMessage()
         message['Subject'] = email_subject

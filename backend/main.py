@@ -14,6 +14,7 @@ def main_loop():
         for user in users:
             if user.should_get_email():
                 send_email_to_user(user)
+                time.sleep(30) # sleeping for 30 seconds in order to prevent nws api from not providing the afd
                 changes_made = True
 
         if changes_made:
@@ -28,7 +29,12 @@ def load_users(path="users.json"):
     try:
         with open(path, "r") as f:
             users = json.load(f)
-            return [User(**user) for user in users]
+            return [User(
+                name=user["name"],
+                location=user["location"],
+                email=user["email"],
+                preferences=user.get("preferences", {})
+            ) for user in users]
     except Exception as e:
         print(f"Failed to load users: {e}")
         return []

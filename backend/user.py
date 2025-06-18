@@ -2,6 +2,8 @@ import re
 from timezonefinder import TimezoneFinder
 from geopy.geocoders import Nominatim
 import requests
+import json
+import os
 from requests.exceptions import HTTPError, Timeout, RequestException
 from zoneinfo import ZoneInfo
 from datetime import datetime, timezone
@@ -16,6 +18,7 @@ Weather knowledge will be set to moderate by default
 EMAIL_REGEX = re.compile(r"^\S+@\S+\.\S+$")
 _geolocator = Nominatim(user_agent="weatherbear")
 _tz_finder = TimezoneFinder()
+USER_PATH = "users.json"
 
 class User:
     def __init__(self, name, location, email, preferences=None):
@@ -126,3 +129,38 @@ class User:
             # onlt keep 5 most recent send timestamps.
             if len(sent) > 5:
                 sent.pop(0)
+
+    def to_dict(self):
+        ''' Returns a dictionary representation of the user '''
+        return {
+            "name": self.name,
+            "location": self.location,
+            "email": self.email,
+            "preferences": self.preferences,
+            "timeZone": self.timeZone
+        }
+
+def load_users():
+    ''' Loads users from users.json file '''
+    if not os.path.exists("users.json"):
+        return []
+    with open(USER_PATH, "r") as f:
+        data = json.load(f)
+        return [User(
+            name=u["name"],
+            location=u["location"],
+            email=u["email"],
+            preferences=u.get("preferences", {})
+        ) for u in data]
+        
+def save_users(users):
+        ''' Saves users to users.json file '''
+        with open(USER_PATH, "w") as f:
+            json.dump([u.__dict__ for u in users], f, indent=2)
+    
+def find_user_by_email(email, users):
+        ''' Finds a user by email address '''
+        for user in users:
+            if user.email == email:
+                return user
+        return None

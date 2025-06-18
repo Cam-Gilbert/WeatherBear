@@ -1,7 +1,7 @@
-from weatherbear.data_fetcher import Data_Fetcher
-from weatherbear.summarizer import Summarizer
-from weatherbear.emailer import Emailer
-from weatherbear.user import User
+from backend.data_fetcher import Data_Fetcher
+from backend.summarizer import Summarizer
+from backend.emailer import Emailer
+from backend.user import User
 
 def test_get_latlon():
     df = Data_Fetcher("Pinehurst")
@@ -30,7 +30,7 @@ def test_get_forecast_office():
 #data = test_get_forecast_office()
 
 def test_get_forecast():
-    df = Data_Fetcher("Southern Pines")
+    df = Data_Fetcher("46077")
     forecast_discussion, organized_alerts, daily_forecasts, obs_data = df.get_forecast()
 
     return forecast_discussion, organized_alerts, daily_forecasts, obs_data
@@ -51,7 +51,7 @@ def test_summarizer():
 #print(summary)
 
 def test_emailer():
-    user = User("Christopher", "Southern Pines", "gilbertchristopher630@gmail.com", preferences={"units": "imperial", "weather_knowledge": "moderate"})
+    user = User("Cameron", "Raleigh", "cdgilber@ncsu.edu", preferences={"units": "imperial", "weather_knowledge": "moderate"})
     df = Data_Fetcher(user.location)
     forecast_discussion, organized_alerts, daily_forecasts, obs_data = df.get_forecast()
     summarizer = Summarizer(user.preferences["weather_knowledge"], forecast_discussion)
