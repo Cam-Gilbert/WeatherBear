@@ -105,6 +105,7 @@ class Data_Fetcher:
                 'wind_direction': period['windDirection'],
                 'short_forecast': period['shortForecast'],
                 'detailed_forecast': period['detailedForecast'],
+                'icon': period['icon']
             }
             daily_forecasts.append(forecast)
 

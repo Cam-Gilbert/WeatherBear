@@ -1,63 +1,68 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="w-full mx-auto mt-10 px-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="w-full mx-auto mt-10 px-12 grid grid-cols-1 md:grid-cols-24 gap-8">
 
-  <!-- Left Panel: Summary / Signup -->
-  <div class="md:col-span-1 bg-white rounded-xl shadow-lg p-4">
-    {% if not location_provided %}
-    <h2 class="text-3xl font-bold text-gray-800 mb-3">Welcome to WeatherBear</h2>
-    <form method="POST" action="/submit-location" id="location-form">
-      <div id="manual-location" class="mb-4">
-        <label class="block text-md font-medium mb-1" for="location">Your Location</label>
-        <input class="w-full border rounded px-3 py-2" type="text" name="location" id="location" placeholder="City or ZIP code" required>
-      </div>
-      <div class="mb-4">
-        <label class="block text-md font-medium mb-1" for="expertise">Weather Knowledge Level</label>
-        <select class="w-full border rounded px-3 py-2" name="expertise" id="expertise">
-          <option value="novice">Novice</option>
-          <option value="intermediate">Intermediate</option>
-          <option value="expert">Expert</option>
-        </select>
-      </div>
-      <div class="mb-4">
-        <label class="block text-md font-medium mb-1" for="units">Perferred Units</label>
-        <select class="w-full border rounded px-3 py-2" name="units" id="units">
-          <option value="imperial">Imperial (F)</option>
-          <option value="metric">Metric (C)</option>
-        </select>
-      </div>
-      <input type="hidden" name="latitude" id="latitude">
-      <input type="hidden" name="longitude" id="longitude">
-      <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" type="submit">Get Forecast</button>
-    </form>
-    <p class="text-sm text-gray-500 mt-2" id="geo-status">Attempting to detect your location...</p>
-    {% else %}
-    <div class="summary-panel">
-      <h2 class="text-xl font-semibold mb-4">Forecast Summary</h2>
-      <p class="mb-4">Summary text about today's forecast based on user expertise level.</p>
+<!-- Left Panel: Summary / Signup -->
+<div class="md:col-span-9 bg-white rounded-xl shadow-lg p-4">
+  <h2 class="text-3xl font-bold text-gray-800 mb-3">Welcome to WeatherBear</h2>
+
+  {% if not location_provided %}
+  <form id="location-form"class="transition-all duration-500 ease-in-out transform">
+    <div id="manual-location" class="mb-4">
+      <label class="block text-md font-medium mb-1" for="location">Your Location</label>
+      <input class="w-full border rounded px-3 py-2" type="text" name="location" id="location" placeholder="City or ZIP code" required>
     </div>
-    {% endif %}
+    <div class="mb-4">
+      <label class="block text-md font-medium mb-1" for="expertise">Weather Knowledge Level</label>
+      <select class="w-full border rounded px-3 py-2" name="expertise" id="expertise">
+        <option value="none">Novice</option>
+        <option value="moderate">Intermediate</option>
+        <option value="expert">Expert</option>
+        <option value="no_summary">No Summary</option>
+      </select>
+    </div>
+    <div class="mb-4">
+      <label class="block text-md font-medium mb-1" for="units">Preferred Units</label>
+      <select class="w-full border rounded px-3 py-2" name="units" id="units">
+        <option value="imperial">Imperial (F)</option>
+        <option value="metric">Metric (C)</option>
+      </select>
+    </div>
+    <input type="hidden" name="latitude" id="latitude">
+    <input type="hidden" name="longitude" id="longitude">
+    <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" type="submit">Get Forecast</button>
+  </form>
+  <p class="text-sm text-gray-500 mt-2" id="geo-status">Attempting to detect your location...</p>
+  {% endif %}
+
+  <!-- This panel is always rendered, just hidden initially -->
+  <div class="summary-panel mt-4 hidden">
+    <h2 class="text-xl font-semibold mb-4">Forecast Summary</h2>
+    <p class="mb-4 text-lg text-gray-600 whitespace-pre-line" id="summary-text"></p>
   </div>
+</div>
 
   <!-- Right Panel: Forecast Sections -->
-  <div class="md:col-span-2 space-y-6">
+  <div class="md:col-span-15 space-y-6">
     <div class="current-panel bg-white rounded-xl shadow-lg p-4">
-      <h3 class="text-lg font-semibold mb-2">Current Conditions</h3>
-      <p>The current conditions at the nearest obs station</p>
+       <p class="text-gray-500 italic">Loading current conditions...</p>
     </div>
 
-    <div class="tonight-panel bg-white rounded-lg shadow p-4">
-      <h3 class="text-lg font-semibold mb-2">Tonight</h3>
-      <p>Nighttime forecast conditions...</p>
+    <div class="firstPeriod-panel bg-white rounded-xl shadow-lg p-4">
+       <p class="text-gray-500 italic">Loading Forecast...</p>
     </div>
 
-    <div class="tomorrow-panel bg-white rounded-lg shadow p-4">
-      <h3 class="text-lg font-semibold mb-2">Tomorrow</h3>
-      <p>Next day forecast details...</p>
+    <div class="secondPeriod-panel bg-white rounded-xl shadow-lg p-4">
+       <p class="text-gray-500 italic">Loading Forecast...</p>
+    </div>
+
+    <div class="thirdPeriod-panel bg-white rounded-xl shadow-lg p-4">
+       <p class="text-gray-500 italic">Loading Forecast...</p>
     </div>
   </div>
 </div>
 
-<script src="{{ url_for('static', filename='js/geolocation.js') }}"></script>
-<script src="{{ url_for('static', filename='js/forecastUpdater.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/geolocation.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/summaryUpdate.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/forecastRender.js') }}"></script>
 {% endblock %}

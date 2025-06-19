@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from backend.data_fetcher import Data_Fetcher
 from backend.user import User, load_users, save_users, find_user_by_email
+from backend.summarizer import Summarizer
 
 load_dotenv()
 openai.api_key = os.getenv("API_KEY")
@@ -136,22 +137,24 @@ def get_forecast():
             clouds = obs_data['properties']['textDescription']
 
     if heatIndex is not None:
-        text += f"It is currently {temperature} degrees {temp_unit} with a dewpoint of {dewpoint} {temp_unit}, for a feels-like temperature of {heatIndex} {temp_unit} at {station} with {clouds.lower()} skies. "
+        text = f"It is currently {temperature} degrees {temp_unit} with a dewpoint of {dewpoint} {temp_unit}, for a feels-like temperature of {heatIndex} {temp_unit} at {station} with {clouds.lower()} skies. "
     elif windChill is not None:
-        text += f"It is currently {temperature} degrees {temp_unit} with a dewpoint of {dewpoint} {temp_unit}, for a feels-like temperature of {windChill} {temp_unit} at {station} with {clouds.lower()} skies. "
+        text = f"It is currently {temperature} degrees {temp_unit} with a dewpoint of {dewpoint} {temp_unit}, for a feels-like temperature of {windChill} {temp_unit} at {station} with {clouds.lower()} skies. "
     else:
-       text += f"It is currently {temperature} degrees {temp_unit} with a dewpoint of {dewpoint} {temp_unit} at {station} with {clouds} skies. "
+       text = f"It is currently {temperature} degrees {temp_unit} with a dewpoint of {dewpoint} {temp_unit} at {station} with {clouds} skies. "
 
+    current_icon = determine_icon(obs_data['properties']['icon'])
 
     return jsonify({
         "current": {
-            "temperature": obs_data['properties']['temperature']['value'],
-            "dewpoint": obs_data['properties']['dewpoint']['value'],
-            "station": obs_data['properties']['stationName'],
-            "clouds": obs_data['properties']['textDescription'],
-            "windChill": obs_data['properties']['windChill']['value'],
-            "heatIndex": obs_data['properties']['heatIndex']['value'],
-            "text": text
+            "temperature": temperature,
+            "dewpoint": dewpoint,
+            "station": station,
+            "clouds": clouds,
+            "windChill": windChill,
+            "heatIndex": heatIndex,
+            "text": text,
+            "icon": current_icon
         }, 
         "first_period": {
             "title": daily_forecasts[0]['name'],
@@ -160,7 +163,8 @@ def get_forecast():
             "wind_speed": daily_forecasts[0]['wind_speed'],
             "is_daytime": daily_forecasts[0]['is_daytime'],
             "precip_chance": daily_forecasts[0]['precipitation_chance'],
-            "text": daily_forecasts[0]['detailed_forecast']
+            "text": daily_forecasts[0]['detailed_forecast'],
+            "icon": determine_icon(daily_forecasts[0]['icon'])
         }, 
         "second_period": {
             "title": daily_forecasts[1]['name'],
@@ -169,7 +173,8 @@ def get_forecast():
             "wind_speed": daily_forecasts[1]['wind_speed'],
             "is_daytime": daily_forecasts[1]['is_daytime'],
             "precip_chance": daily_forecasts[1]['precipitation_chance'],
-            "text": daily_forecasts[1]['detailed_forecast']
+            "text": daily_forecasts[1]['detailed_forecast'],
+            "icon": determine_icon(daily_forecasts[0]['icon'])
         }, 
         "third_period": {
             "title": daily_forecasts[2]['name'],
@@ -178,7 +183,9 @@ def get_forecast():
             "wind_speed": daily_forecasts[2]['wind_speed'],
             "is_daytime": daily_forecasts[2]['is_daytime'],
             "precip_chance": daily_forecasts[2]['precipitation_chance'],
-            "text": daily_forecasts[2]['detailed_forecast']
+            "text": daily_forecasts[2]['detailed_forecast'],
+            "icon": determine_icon(daily_forecasts[0]['icon'])
+
         }, 
         "fourth_period": {
             "title": daily_forecasts[3]['name'],
@@ -187,10 +194,148 @@ def get_forecast():
             "wind_speed": daily_forecasts[3]['wind_speed'],
             "is_daytime": daily_forecasts[3]['is_daytime'],
             "precip_chance": daily_forecasts[3]['precipitation_chance'],
-            "text": daily_forecasts[3]['detailed_forecast']
+            "text": daily_forecasts[3]['detailed_forecast'],
+            "icon": determine_icon(daily_forecasts[0]['icon'])
         }
     })
 
+@app.route("/get-summary", methods=["POST"])
+def get_summary():
+    location = request.form.get("location")
+    lat = request.form.get("latitude")
+    lon = request.form.get("longitude")
+    expertise = request.form.get("expertise")
+    units = request.form.get("units")
+
+    if location:
+        loc = location  # Prefer user-entered location
+    elif lat and lon:
+        loc = f"{lat},{lon}"  # Fallback to detected coordinates
+    else:
+        return jsonify({"error": "No location provided"}), 400
+
+    df = Data_Fetcher(loc)
+    forecast_discussion, organized_alerts, daily_forecasts, obs_data = df.get_forecast()
+    if forecast_discussion is not None:
+        summarizer = Summarizer(expertise, forecast_discussion)
+    else:
+        return jsonify({"error": "Missing afd"}), 400
+
+    summary = f"Forecast Summary for {location}\n\n"
+    summary += summarizer.generate_Message()
+
+    return jsonify({
+        "summary": summary
+    })
+
+
+def determine_icon(link):
+    if link is None:
+        return "static/assets/day_clear.png"
+
+    if "skc" or "wind_skc" or "hot" or "cold" in link:
+        if "day" in link:
+            icon = "static/assets/day_clear.png"
+        else:
+            icon = "static/assets/moon_clear.png"
+    elif "few" or "wind_few" in link:
+        if "day" in link:
+            icon = "static/assets/day_clear.png"
+        else:
+            icon = "static/assets/moon_clear.png"
+    elif "sct" or "wind_sct" in link:
+        if "day" in link:
+            icon = "static/assets/sun_partlycloudy.png"
+        else:
+            icon = "static/assets/moon_partlycloudy.png"
+    elif "bkn" or "wind_bkn" in link:
+        if "day" in link:
+            icon = "static/assets/sun_partlycloudy.png"
+        else:
+            icon = "static/assets/moon_partlycloudy.png"
+    elif "ovc" or "wind_ovc" in link:
+        icon = "static/assets/overcast.png"
+    elif "snow" in link:
+        if "day" in link:
+            icon = "static/assets/sun_scattered_snow.png"
+        else:
+            icon = "static/assets/moon_scattered_snow.png"
+    elif "rain_snow" in link:
+        if "day" in link:
+            icon = "static/assets/sun_scattered_sleet.png"
+        else:
+            icon = "static/assets/moon_scattered_sleet.png"    
+    elif "rain_sleet" in link:
+        if "day" in link:
+            icon = "static/assets/sun_scattered_sleet.png"
+        else:
+            icon = "static/assets/moon_scattered_sleet.png" 
+    elif "snow_sleet" in link:
+        if "day" in link:
+            icon = "static/assets/sun_scattered_sleet.png"
+        else:
+            icon = "static/assets/moon_scattered_sleet.png" 
+    elif "fzra" in link:
+        if "day" in link:
+            icon = "static/assets/sun_scattered_sleet.png"
+        else:
+            icon = "static/assets/moon_scattered_sleet.png" 
+    elif "rain_fzra" in link:
+        if "day" in link:
+            icon = "static/assets/sun_scattered_sleet.png"
+        else:
+            icon = "static/assets/moon_scattered_sleet.png" 
+    elif "snow_fzra" in link:
+        if "day" in link:
+            icon = "static/assets/sun_scattered_sleet.png"
+        else:
+            icon = "static/assets/moon_scattered_sleet.png"         
+    elif "sleet" in link:
+        if "day" in link:
+            icon = "static/assets/sun_scattered_sleet.png"
+        else:
+            icon = "static/assets/moon_scattered_sleet.png"   
+    elif "rain" in link:
+        icon = "static/assets/rain.png"  
+    elif "rain_showers" in link:
+        icon = "static/assets/rain.png"  
+    elif "rain_showers_hi" in link:
+        if "day" in link:
+            icon = "static/assets/sun_scattered_rain.png"
+        else:
+            icon = "static/assets/moon_scattered_rain.png"
+    elif "tsra" in link:
+        icon = "static/assets/thunderstorm.png"
+    elif "tsra_sct" in link:
+        if "day" in link:
+            icon = "static/assets/sun_scattered_thunderstorm.png"
+        else:
+            icon = "static/assets/moon_scattered_thunderstorm.png"  
+    elif "tsra_hi" in link:
+        if "day" in link:
+            icon = "static/assets/thunderstorm.png"
+        else:
+            icon = "static/assets/thunderstorm.png"  
+    elif "tornado" in link:
+        icon = "static/assets/tornado.png"
+    elif "hurricane" or "tropical_storm" in link:
+        icon = "static/assets/hurricane.png"
+    elif "dust" or "smoke" or "haze" in link:
+        if "day" in link:
+            icon = "static/assets/sun_hazy.png"
+        else:
+            icon = "static/assets/moon_hazy.png"
+    elif "blizzard" in link:
+        icon = "static/assets/snow.png"
+    elif "fog" in link:
+        if "day" in link:
+            icon = "static/assets/sun_fog.png"
+        else:
+            icon = "static/assets/moon_fog.png"
+    else:
+        icon = "static/assets/day_clear.png"
+
+    return icon
 
 
 if __name__ == "__main__":

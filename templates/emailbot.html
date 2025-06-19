@@ -12,17 +12,27 @@
     <h3 class="text-2xl font-bold text-gray-800 mb-2">Example Email</h3>
 
     <div class="flex space-x-4 mb-4" id="expertise-tabs">
-      <button data-level="beginner" class="px-4 py-2 rounded bg-gray-800 text-gray-300 hover:bg-gray-700">Beginner</button>
+      <button data-level="beginner" class="px-4 py-2 rounded bg-gray-800 text-gray-300 hover:bg-gray-600">Beginner</button>
       <button data-level="moderate" class="px-4 py-2 rounded bg-blue-500 text-white">Moderate</button>
-      <button data-level="expert" class="px-4 py-2 rounded bg-gray-800 text-gray-300 hover:bg-gray-700">Expert</button>
+      <button data-level="expert" class="px-4 py-2 rounded bg-gray-800 text-gray-300 hover:bg-gray-600">Expert</button>
     </div>
 
-    <div id="email-example-beginner" class="hidden bg-gray-100 border border-gray-300 rounded p-4 text-sm text-gray-800 font-mono whitespace-pre-line">
-      Subject: 🌤️ Today’s Weather
+    <div id="email-example-beginner" class="hidden bg-gray-100 border border-gray-300 rounded p-4 text-sm text-gray-800 font-mono whitespace-pre-line">Subject: 🌦️ Daily Weather Update, Dan
 
-      Hi! It’s currently 85°F in your area with a dewpoint of 74°F, which means it feels very humid. Expect scattered showers this afternoon and evening.
+      Hello Dan, it is currently 71 degrees F with a dewpoint of 68 F, for a feels-like temperature of 72 F at Cincinnati, Cincinnati Municipal Airport Lunken Field with mostly cloudy skies.
 
-      Stay dry!
+      Today's Forecast:
+      Juneteenth: Rain showers likely before 5pm. Partly sunny, with a high near 82. West wind 12 to 15 mph. Chance of precipitation is 60%. New rainfall amounts less than a tenth of an inch possible.
+
+      Tonight: A slight chance of rain showers between 7pm and 8pm. Mostly clear, with a low around 64. West wind 1 to 9 mph. Chance of precipitation is 20%. New rainfall amounts less than a tenth of an inch possible.
+
+      Summarized forecast discussion:
+
+      Today, a cold front is moving through our region, bringing a chance of showers and some thunderstorms, especially this morning and early afternoon. As the front passes, temperatures will fall a bit, with cooler air moving in from the northwest. You may notice breezier conditions with winds shifting and gusting later today.
+
+      Tonight, drier and cooler air will settle in under clear skies, leading to comfortable overnight lows in the upper 50s to mid 60s. Tomorrow will be a pleasant day with sunshine and warmer temperatures climbing into the 80s as high pressure shifts east and south winds develop. Looking ahead, a warming trend is expected starting Sunday, with increasing heat and humidity leading to potentially uncomfortable conditions early next week, including heat levels that feel over 100 degrees. It’s a good idea to stay hydrated and take breaks from the heat during this period.
+
+      Stay weather aware!
       - WeatherBear 🐻
     </div>
 
@@ -200,9 +210,9 @@
         // change button colors
         buttons.forEach(btn => {
           btn.classList.remove("bg-blue-500", "text-white", "hover:bg-blue-600");
-          btn.classList.add("bg-gray-800", "text-gray-300", "hover:bg-gray-700");
+          btn.classList.add("bg-gray-800", "text-gray-300", "hover:bg-gray-600");
         });
-        button.classList.remove("bg-gray-800", "text-gray-300", "hover:bg-gray-700");
+        button.classList.remove("bg-gray-800", "text-gray-300", "hover:bg-gray-600");
         button.classList.add("bg-blue-500", "text-white", "hover:bg-blue-600");
 
         for (const key in examples) {

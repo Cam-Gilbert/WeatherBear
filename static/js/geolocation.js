@@ -1,3 +1,5 @@
+import { fetchAndRenderForecast } from "./forecastRender.js";
+
 /** 
  * Code to get users locations from browser
  */ 
@@ -19,6 +21,8 @@ window.addEventListener("DOMContentLoaded", () => {
         // Remove required attribute from manual input (since it's now optional)
         locationInput.removeAttribute("required");
 
+        let city = ""
+
         // (Optional) Try to reverse geocode to fill in the city name
         try {
           const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
@@ -31,6 +35,15 @@ window.addEventListener("DOMContentLoaded", () => {
 
         // Update status
         statusText.textContent = "Location auto-detected! You may edit it if needed.";
+
+        const data = {
+          location: city,
+          latitude: latitude,
+          longitude: longitude,
+          units: "imperial"
+        }
+
+        fetchAndRenderForecast(data)
       },
       (error) => {
         statusText.textContent = "Unable to auto-detect location. Please enter manually.";
