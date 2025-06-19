@@ -5,7 +5,6 @@
   <!-- Left Panel: Summary / Signup -->
   <div class="md:col-span-1 bg-white rounded-xl shadow-lg p-4">
     {% if not location_provided %}
-    <!-- Temporary Signup -->
     <h2 class="text-3xl font-bold text-gray-800 mb-3">Welcome to WeatherBear</h2>
     <form method="POST" action="/submit-location" id="location-form">
       <div id="manual-location" class="mb-4">
@@ -20,42 +19,39 @@
           <option value="expert">Expert</option>
         </select>
       </div>
-      <!-- Hidden inputs for geolocation fallback -->
+      <div class="mb-4">
+        <label class="block text-md font-medium mb-1" for="units">Perferred Units</label>
+        <select class="w-full border rounded px-3 py-2" name="units" id="units">
+          <option value="imperial">Imperial (F)</option>
+          <option value="metric">Metric (C)</option>
+        </select>
+      </div>
       <input type="hidden" name="latitude" id="latitude">
       <input type="hidden" name="longitude" id="longitude">
       <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" type="submit">Get Forecast</button>
     </form>
     <p class="text-sm text-gray-500 mt-2" id="geo-status">Attempting to detect your location...</p>
-
     {% else %}
-    <!-- Weather Summary -->
-    <h2 class="text-xl font-semibold mb-4">Forecast Summary</h2>
-    <p class="mb-4">Summary text about today's forecast based on user expertise level.</p>
+    <div class="summary-panel">
+      <h2 class="text-xl font-semibold mb-4">Forecast Summary</h2>
+      <p class="mb-4">Summary text about today's forecast based on user expertise level.</p>
+    </div>
     {% endif %}
   </div>
 
   <!-- Right Panel: Forecast Sections -->
   <div class="md:col-span-2 space-y-6">
-    <!-- Summarized Forecast -->
-    <div class="bg-white rounded-xl shadow-lg p-4">
-      <h3 class="text-lg font-semibold mb-2">Summarized Forecast</h3>
-      <p>Short summary of the day's weather conditions...</p>
-    </div>
-
-    <!-- Current Conditions -->
-    <div class="bg-white rounded-lg shadow p-4">
+    <div class="current-panel bg-white rounded-xl shadow-lg p-4">
       <h3 class="text-lg font-semibold mb-2">Current Conditions</h3>
-      <p>Details on temperature, wind, humidity, etc...</p>
+      <p>The current conditions at the nearest obs station</p>
     </div>
 
-    <!-- Tonight -->
-    <div class="bg-white rounded-lg shadow p-4">
+    <div class="tonight-panel bg-white rounded-lg shadow p-4">
       <h3 class="text-lg font-semibold mb-2">Tonight</h3>
       <p>Nighttime forecast conditions...</p>
     </div>
 
-    <!-- Tomorrow -->
-    <div class="bg-white rounded-lg shadow p-4">
+    <div class="tomorrow-panel bg-white rounded-lg shadow p-4">
       <h3 class="text-lg font-semibold mb-2">Tomorrow</h3>
       <p>Next day forecast details...</p>
     </div>
@@ -63,4 +59,5 @@
 </div>
 
 <script src="{{ url_for('static', filename='js/geolocation.js') }}"></script>
+<script src="{{ url_for('static', filename='js/forecastUpdater.js') }}"></script>
 {% endblock %}

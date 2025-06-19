@@ -10,27 +10,60 @@
     </p>
 
     <h3 class="text-2xl font-bold text-gray-800 mb-2">Example Email</h3>
-    <div class="bg-gray-100 border border-gray-300 rounded p-4 text-sm text-gray-800 font-mono whitespace-pre-line">Subject: 🌦️ Daily Weather Update, Cameron
+
+    <div class="flex space-x-4 mb-4" id="expertise-tabs">
+      <button data-level="beginner" class="px-4 py-2 rounded bg-gray-800 text-gray-300 hover:bg-gray-700">Beginner</button>
+      <button data-level="moderate" class="px-4 py-2 rounded bg-blue-500 text-white">Moderate</button>
+      <button data-level="expert" class="px-4 py-2 rounded bg-gray-800 text-gray-300 hover:bg-gray-700">Expert</button>
+    </div>
+
+    <div id="email-example-beginner" class="hidden bg-gray-100 border border-gray-300 rounded p-4 text-sm text-gray-800 font-mono whitespace-pre-line">
+      Subject: 🌤️ Today’s Weather
+
+      Hi! It’s currently 85°F in your area with a dewpoint of 74°F, which means it feels very humid. Expect scattered showers this afternoon and evening.
+
+      Stay dry!
+      - WeatherBear 🐻
+    </div>
+
+    <div id="email-example-moderate" class="bg-gray-100 border border-gray-300 rounded p-4 text-sm text-gray-800 font-mono whitespace-pre-line">Subject: 🌦️ Daily Weather Update, Curt
       
-      Hello Cameron, it is currently 85 degrees F with a dewpoint of 74 F, for a feels-like temperature of 92 F at Raleigh / Durham, Raleigh-Durham International Airport with mostly cloudy skies.
+      Hello Curt, it is currently 81 degrees F with a dewpoint of 42 F, for a feels-like temperature of 80 F at Buckley Space Force Base with mostly clear skies.
 
       Today's Forecast:
-      This Afternoon: A chance of showers and thunderstorms after 3pm. Partly sunny, with a high near 89. West wind around 3 mph. Chance of precipitation is 30%. New rainfall amounts between a quarter and half of an inch possible.
+      Tonight: Mostly clear, with a low around 59. South wind around 8 mph.
 
-      Tonight: Showers and thunderstorms likely before 4am. Mostly cloudy, with a low around 72. South wind around 3 mph. Chance of precipitation is 70%. New rainfall amounts between 1 and 2 inches possible.
+      Juneteenth: Sunny. High near 96, with temperatures falling to around 94 in the afternoon. South southeast wind 5 to 10 mph, with gusts as high as 16 mph.
 
       Watches/Warnings in your area:
 
-      Flood Watch issued June 16 at 11:52AM EDT until June 17 at 2:00AM EDT by NWS Raleigh NC
+      Heat Advisory issued June 18 at 1:51PM MDT until June 21 at 6:00PM MDT by NWS Denver CO
 
       Summarized forecast discussion:
 
-      A stalled backdoor cold front will dominate the region today and overnight, interacting with several upper-level shortwaves to trigger repeated clusters of thunderstorms capable of producing heavy, training rainfall. This setup is responsible for ongoing flash flooding concerns, especially from southern Nash into Wilson and Edgecombe counties, where localized rainfall totals have approached five inches. The frontal boundary’s exact position will fluctuate with convective outflow boundaries, primarily stretching from southwest Virginia through the Triangle to near Greenville, acting as a focus for additional storm development. Expect high moisture content and multiple rounds of thunderstorms leading to widespread flash flood potential and generally warm highs in the mid-80s to around 90°F south and west of the boundary.
+      A hot and dry weather pattern is unfolding for the Denver-Boulder area through the weekend, driven by strong upper-level ridging and westerly winds bringing warm air from the Desert Southwest. Today will be mostly sunny with light winds and no precipitation. Thursday sees temperatures climbing into the mid to upper 90s, thanks to compressional warming as west-southwesterly winds strengthen over Colorado—still dry with little chance of storms.
 
-      By Tuesday, the front lifts northward as a warm front under building upper-level ridging, suppressing widespread convection and reducing storm chances to isolated areas mainly in the northwest Piedmont. This ridge intensification contributes to hotter and more humid conditions with highs climbing into the upper 80s and lower 90s, and only scattered afternoon storms possible. Into midweek, persistent ridging and retrograding offshore high pressure will maintain hot and humid weather with limited storm coverage, although a developing mid-latitude trough and cold front approaching late Thursday may increase thunderstorm chances, including isolated stronger storms, mainly along and ahead of the front.
+      By Friday and Saturday, a robust ridge of high pressure combined with strong downslope winds along the I-25 corridor will push highs near or above 100 degrees, prompting a Heat Advisory for the area. The combination of dry air and gusty winds will create critical fire weather conditions, but these winds and low humidity might also reduce heat-related health issues somewhat. A Pacific Northwest trough approaches late Saturday or Sunday, with forecast uncertainty: if it arrives quickly, cooler temperatures and scattered storms may develop on the plains; if it lingers, heat will persist longer. Looking ahead to early next week, the trough will bring cooler, more unsettled weather with daily afternoon and evening storms possible, some potentially severe.
 
-      Stay weahter aware!
+      Stay weather aware!
       - WeatherBear 🐻
+    </div>
+
+    <div id="email-example-expert" class="hidden bg-gray-100 border border-gray-300 rounded p-4 text-sm text-gray-800 font-mono whitespace-pre-line">Subject: 🌦️ Daily Weather Update, Cameron
+
+      Hello Cameron, it is currently 91 degrees F with a dewpoint of 69 F, for a feels-like temperature of 96 F at Raleigh / Durham, Raleigh-Durham International Airport with partly cloudy skies.
+
+      Today's Forecast:
+      Tonight: Mostly clear, with a low around 75. Southwest wind around 7 mph.
+
+      Juneteenth: A chance of showers and thunderstorms after 2pm. Sunny, with a high near 96. Heat index values as high as 103. Southwest wind 8 to 12 mph, with gusts as high as 23 mph. Chance of precipitation is 40%. New rainfall amounts between a tenth and quarter of an inch possible.
+
+      Summarized forecast discussion:
+
+      A strong synoptic cold front currently advancing from the Mississippi Valley will traverse central North Carolina Thursday into Thursday night, serving as the principal forcing mechanism for a well-organized severe convective outbreak. Ahead of the front, SBCAPE values are forecast to reach 2000–3000 J/kg, especially over the Coastal Plain and Piedmont regions, coupled with effective bulk shear of 25–35 kt, providing sufficient bulk shear to support organized multicell clusters or even transient supercells. This environment favors damaging wind gusts and hail, with a non-zero tornado threat embedded within the convective line. The timing places storm initiation in the NW Piedmont by early afternoon, with eastward progression through the Triangle mid-afternoon and reaching the Coastal Plain by evening. Convection will diminish overnight as the front stalls offshore. Prefrontal temperatures will remain hot and humid, with heat indices exceeding 100°F in some areas.
+
+      Post-frontal conditions Friday will be comparatively cooler and less humid with subsiding diurnal convection limited mostly to the coastal fringe. However, high pressure building over the region this weekend will induce a pronounced warm-air advection pattern beneath a strengthening Bermuda High extending westward across the Mid-Atlantic. This synoptic ridge will promote a sustained heat wave, featuring daily maximum temperatures climbing into the mid- to upper 90s and heat indices rising to or above heat advisory criteria (105–109°F) by Monday and Tuesday. Overnight lows will remain elevated near record warm minimums due to persistent moist advection and boundary layer decoupling. Minimal precipitation is expected through early next week as the ridge suppresses convective initiation, aside from potential weak afternoon thunderstorms Wednesday in the western Piedmont, contingent on model consistency.
+
     </div>
   </div>
 
@@ -89,6 +122,14 @@
       </div>
 
       <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-800">Submit</button>
+
+      {% for category, message in flash_messages %}
+        {% if category == 'signup' %}
+          <div id="flash-message" class="mt-2 text-green-700 bg-green-100 px-4 py-2 rounded transition-opacity duration-700">
+            {{ message }}
+          </div>
+        {% endif %}
+      {% endfor %}
     </form>
 
     <p class="text-sm text-gray-500 mt-2" id="geo-status">Attempting to detect your location...</p>
@@ -104,6 +145,13 @@
       <input type="email" name="unsubscribe_email" placeholder="Your email address"
             required class="w-full md:w-1/2 border p-2 rounded" />
       <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-800">Remove Me</button>
+      {% for category, message in flash_messages %}
+        {% if category == 'unsubscribe' %}
+          <div id="unsub-flash-message" class="mt-2 text-green-700 bg-green-100 px-4 py-2 rounded transition-opacity duration-700">
+            {{ message }}
+          </div>
+        {% endif %}
+      {% endfor %}
     </form>
   </div>
 </div>
@@ -117,6 +165,51 @@
       selected[selected.length - 1].selected = false;
       alert("You can only select up to 4 times.");
     }
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const fadeOut = (id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        setTimeout(() => {
+          el.classList.add("opacity-0");
+          setTimeout(() => el.remove(), 700);
+        }, 2000);
+      }
+    };
+    fadeOut("flash-message");
+    fadeOut("unsub-flash-message");
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const buttons = document.querySelectorAll("#expertise-tabs button");
+    const examples = {
+      beginner: document.getElementById("email-example-beginner"),
+      moderate: document.getElementById("email-example-moderate"),
+      expert: document.getElementById("email-example-expert")
+    };
+
+    buttons.forEach(button => {
+      button.addEventListener("click", () => {
+        const level = button.dataset.level;
+
+        // change button colors
+        buttons.forEach(btn => {
+          btn.classList.remove("bg-blue-500", "text-white", "hover:bg-blue-600");
+          btn.classList.add("bg-gray-800", "text-gray-300", "hover:bg-gray-700");
+        });
+        button.classList.remove("bg-gray-800", "text-gray-300", "hover:bg-gray-700");
+        button.classList.add("bg-blue-500", "text-white", "hover:bg-blue-600");
+
+        for (const key in examples) {
+          examples[key].classList.toggle("hidden", key !== level);
+        }
+      });
+    });
   });
 </script>
 

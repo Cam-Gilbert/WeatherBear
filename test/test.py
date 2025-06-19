@@ -30,13 +30,13 @@ def test_get_forecast_office():
 #data = test_get_forecast_office()
 
 def test_get_forecast():
-    df = Data_Fetcher("46077")
+    df = Data_Fetcher("35.78, -78.63")
     forecast_discussion, organized_alerts, daily_forecasts, obs_data = df.get_forecast()
 
     return forecast_discussion, organized_alerts, daily_forecasts, obs_data
 
 
-#forecast_discussion, organized_alerts, daily_forecasts, obs_data = test_get_forecast()
+forecast_discussion, daily_forecasts, obs_data = test_get_forecast()
 
 def test_summarizer():
     df = Data_Fetcher("San Antonio")
@@ -51,7 +51,7 @@ def test_summarizer():
 #print(summary)
 
 def test_emailer():
-    user = User("Cameron", "Raleigh", "cdgilber@ncsu.edu", preferences={"units": "imperial", "weather_knowledge": "moderate"})
+    user = User("Cameron", "Raleigh", "cdgilber@ncsu.edu", preferences={"units": "imperial", "weather_knowledge": "expert"})
     df = Data_Fetcher(user.location)
     forecast_discussion, organized_alerts, daily_forecasts, obs_data = df.get_forecast()
     summarizer = Summarizer(user.preferences["weather_knowledge"], forecast_discussion)
@@ -60,8 +60,8 @@ def test_emailer():
     email = emailer.generate_email()
     emailer.send_email()
 
-    return email, user, forecast_discussion
+    return email, user, forecast_discussion, obs_data
 
-email, user, forecast_discussion = test_emailer()
+#email, user, forecast_discussion, obs_data = test_emailer()
 
 #print(email)

@@ -1,13 +1,15 @@
-from flask import Flask, request, jsonify, render_template, redirect, url_for
+from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, get_flashed_messages
 import openai
 import os
 from dotenv import load_dotenv
+from backend.data_fetcher import Data_Fetcher
 from backend.user import User, load_users, save_users, find_user_by_email
 
 load_dotenv()
 openai.api_key = os.getenv("API_KEY")
 
 app = Flask(__name__)
+app.secret_key = os.getenv("SECRET_KEY")
 
 @app.route("/openai", methods=["POST"])
 def proxy_openai():
@@ -36,7 +38,8 @@ def homepage():
 @app.route("/emailbot")
 def emailbot():
     ''' Routing for the emailbot html page '''
-    return render_template("emailbot.html")
+    messages = get_flashed_messages(with_categories=True)
+    return render_template("emailbot.html", flash_messages=messages)
 
 @app.route("/about")
 def about():
@@ -75,6 +78,9 @@ def submit_emailbot():
     existing_user = find_user_by_email(user.email, users)
     if existing_user:
         users = [u for u in users if u.email != user.email]
+        flash("Your preferences have been saved!", "signup")
+    else:
+        flash("You have successsfully signed up!", "signup")
     users.append(user)
     save_users(users)
     return redirect(url_for("emailbot"))
@@ -86,7 +92,106 @@ def unsubscribe():
     users = load_users()
     users = [u for u in users if u.email != email]
     save_users(users)
+    flash("You have been unsubscribed.", "unsubscribe")
     return redirect(url_for("emailbot"))
+
+@app.route("/get-forecast", methods=["POST"])
+def get_forecast():
+    data = request.get_json()
+    location = data.get("location")
+    lat = data.get("latitude")
+    lon = data.get("longitude")
+    units = data.get("units", "imperial")
+    # verify lat lon exists, use location otherwise
+    if lat and lon:
+        loc = f"{lat},{lon}"
+    elif location:
+        loc = location
+
+    df = Data_Fetcher(loc)
+    forecast_discussion, organized_alerts, daily_forecasts, obs_data = df.get_forecast()
+
+    if units == "imperial":
+        temp_unit = "F"
+        # observation temperatures & dewpoints are in celcius - must convert to F
+        temperature = obs_data['properties']['temperature']['value']
+        temperature = round((temperature * (9/5)) + 32)
+        dewpoint = obs_data['properties']['dewpoint']['value']
+        dewpoint = round((dewpoint * (9/5)) + 32)
+        windChill = obs_data['properties']['windChill']['value']
+        if windChill is not None:
+            windChill = round((windChill * (9/5)) + 32)
+        heatIndex = obs_data['properties']['heatIndex']['value']
+        if heatIndex is not None:
+            heatIndex = round((heatIndex * (9/5)) + 32)
+        station = obs_data['properties']['stationName']
+        clouds = obs_data['properties']['textDescription']
+    else:
+            temp_unit = "C"
+            temperature = obs_data['properties']['temperature']['value']
+            dewpoint = obs_data['properties']['dewpoint']['value']
+            windChill = obs_data['properties']['windChill']['value']
+            heatIndex = obs_data['properties']['heatIndex']['value']
+            station = obs_data['properties']['stationName']
+            clouds = obs_data['properties']['textDescription']
+
+    if heatIndex is not None:
+        text += f"It is currently {temperature} degrees {temp_unit} with a dewpoint of {dewpoint} {temp_unit}, for a feels-like temperature of {heatIndex} {temp_unit} at {station} with {clouds.lower()} skies. "
+    elif windChill is not None:
+        text += f"It is currently {temperature} degrees {temp_unit} with a dewpoint of {dewpoint} {temp_unit}, for a feels-like temperature of {windChill} {temp_unit} at {station} with {clouds.lower()} skies. "
+    else:
+       text += f"It is currently {temperature} degrees {temp_unit} with a dewpoint of {dewpoint} {temp_unit} at {station} with {clouds} skies. "
+
+
+    return jsonify({
+        "current": {
+            "temperature": obs_data['properties']['temperature']['value'],
+            "dewpoint": obs_data['properties']['dewpoint']['value'],
+            "station": obs_data['properties']['stationName'],
+            "clouds": obs_data['properties']['textDescription'],
+            "windChill": obs_data['properties']['windChill']['value'],
+            "heatIndex": obs_data['properties']['heatIndex']['value'],
+            "text": text
+        }, 
+        "first_period": {
+            "title": daily_forecasts[0]['name'],
+            "temperature": daily_forecasts[0]['temperature'],
+            "wind_dir": daily_forecasts[0]['wind_direction'],
+            "wind_speed": daily_forecasts[0]['wind_speed'],
+            "is_daytime": daily_forecasts[0]['is_daytime'],
+            "precip_chance": daily_forecasts[0]['precipitation_chance'],
+            "text": daily_forecasts[0]['detailed_forecast']
+        }, 
+        "second_period": {
+            "title": daily_forecasts[1]['name'],
+            "temperature": daily_forecasts[1]['temperature'],
+            "wind_dir": daily_forecasts[1]['wind_direction'],
+            "wind_speed": daily_forecasts[1]['wind_speed'],
+            "is_daytime": daily_forecasts[1]['is_daytime'],
+            "precip_chance": daily_forecasts[1]['precipitation_chance'],
+            "text": daily_forecasts[1]['detailed_forecast']
+        }, 
+        "third_period": {
+            "title": daily_forecasts[2]['name'],
+            "temperature": daily_forecasts[2]['temperature'],
+            "wind_dir": daily_forecasts[2]['wind_direction'],
+            "wind_speed": daily_forecasts[2]['wind_speed'],
+            "is_daytime": daily_forecasts[2]['is_daytime'],
+            "precip_chance": daily_forecasts[2]['precipitation_chance'],
+            "text": daily_forecasts[2]['detailed_forecast']
+        }, 
+        "fourth_period": {
+            "title": daily_forecasts[3]['name'],
+            "temperature": daily_forecasts[3]['temperature'],
+            "wind_dir": daily_forecasts[3]['wind_direction'],
+            "wind_speed": daily_forecasts[3]['wind_speed'],
+            "is_daytime": daily_forecasts[3]['is_daytime'],
+            "precip_chance": daily_forecasts[3]['precipitation_chance'],
+            "text": daily_forecasts[3]['detailed_forecast']
+        }
+    })
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
