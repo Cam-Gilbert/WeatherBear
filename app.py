@@ -233,105 +233,38 @@ def determine_icon(link):
     if link is None:
         return "static/assets/day_clear.png"
 
-    if "skc" or "wind_skc" or "hot" or "cold" in link:
-        if "day" in link:
-            icon = "static/assets/day_clear.png"
-        else:
-            icon = "static/assets/moon_clear.png"
-    elif "few" or "wind_few" in link:
-        if "day" in link:
-            icon = "static/assets/day_clear.png"
-        else:
-            icon = "static/assets/moon_clear.png"
-    elif "sct" or "wind_sct" in link:
-        if "day" in link:
-            icon = "static/assets/sun_partlycloudy.png"
-        else:
-            icon = "static/assets/moon_partlycloudy.png"
-    elif "bkn" or "wind_bkn" in link:
-        if "day" in link:
-            icon = "static/assets/sun_partlycloudy.png"
-        else:
-            icon = "static/assets/moon_partlycloudy.png"
-    elif "ovc" or "wind_ovc" in link:
+    if any(term in link for term in ["skc", "wind_skc", "hot", "cold"]):
+        icon = "static/assets/day_clear.png" if "day" in link else "static/assets/moon_clear.png"
+    elif any(term in link for term in ["few", "wind_few"]):
+        icon = "static/assets/day_clear.png" if "day" in link else "static/assets/moon_clear.png"
+    elif any(term in link for term in ["sct", "wind_sct"]):
+        icon = "static/assets/sun_partlycloudy.png" if "day" in link else "static/assets/moon_partlycloudy.png"
+    elif any(term in link for term in ["bkn", "wind_bkn"]):
+        icon = "static/assets/sun_partlycloudy.png" if "day" in link else "static/assets/moon_partlycloudy.png"
+    elif any(term in link for term in ["ovc", "wind_ovc"]):
         icon = "static/assets/overcast.png"
     elif "snow" in link:
-        if "day" in link:
-            icon = "static/assets/sun_scattered_snow.png"
-        else:
-            icon = "static/assets/moon_scattered_snow.png"
-    elif "rain_snow" in link:
-        if "day" in link:
-            icon = "static/assets/sun_scattered_sleet.png"
-        else:
-            icon = "static/assets/moon_scattered_sleet.png"    
-    elif "rain_sleet" in link:
-        if "day" in link:
-            icon = "static/assets/sun_scattered_sleet.png"
-        else:
-            icon = "static/assets/moon_scattered_sleet.png" 
-    elif "snow_sleet" in link:
-        if "day" in link:
-            icon = "static/assets/sun_scattered_sleet.png"
-        else:
-            icon = "static/assets/moon_scattered_sleet.png" 
-    elif "fzra" in link:
-        if "day" in link:
-            icon = "static/assets/sun_scattered_sleet.png"
-        else:
-            icon = "static/assets/moon_scattered_sleet.png" 
-    elif "rain_fzra" in link:
-        if "day" in link:
-            icon = "static/assets/sun_scattered_sleet.png"
-        else:
-            icon = "static/assets/moon_scattered_sleet.png" 
-    elif "snow_fzra" in link:
-        if "day" in link:
-            icon = "static/assets/sun_scattered_sleet.png"
-        else:
-            icon = "static/assets/moon_scattered_sleet.png"         
-    elif "sleet" in link:
-        if "day" in link:
-            icon = "static/assets/sun_scattered_sleet.png"
-        else:
-            icon = "static/assets/moon_scattered_sleet.png"   
-    elif "rain" in link:
-        icon = "static/assets/rain.png"  
-    elif "rain_showers" in link:
-        icon = "static/assets/rain.png"  
+        icon = "static/assets/sun_scattered_snow.png" if "day" in link else "static/assets/moon_scattered_snow.png"
+    elif any(term in link for term in ["rain_snow", "rain_sleet", "snow_sleet", "fzra", "rain_fzra", "snow_fzra", "sleet"]):
+        icon = "static/assets/sun_scattered_sleet.png" if "day" in link else "static/assets/moon_scattered_sleet.png"
     elif "rain_showers_hi" in link:
-        if "day" in link:
-            icon = "static/assets/sun_scattered_rain.png"
-        else:
-            icon = "static/assets/moon_scattered_rain.png"
-    elif "tsra" in link:
-        icon = "static/assets/thunderstorm.png"
+        icon = "static/assets/sun_scattered_rain.png" if "day" in link else "static/assets/moon_scattered_rain.png"
+    elif "rain_showers" in link or "rain" in link:
+        icon = "static/assets/rain.png"
     elif "tsra_sct" in link:
-        if "day" in link:
-            icon = "static/assets/sun_scattered_thunderstorm.png"
-        else:
-            icon = "static/assets/moon_scattered_thunderstorm.png"  
-    elif "tsra_hi" in link:
-        if "day" in link:
-            icon = "static/assets/thunderstorm.png"
-        else:
-            icon = "static/assets/thunderstorm.png"  
+        icon = "static/assets/sun_scattered_thunderstorm.png" if "day" in link else "static/assets/moon_scattered_thunderstorm.png"
+    elif "tsra_hi" in link or "tsra" in link:
+        icon = "static/assets/thunderstorm.png"
     elif "tornado" in link:
         icon = "static/assets/tornado.png"
-    elif "hurricane" or "tropical_storm" in link:
+    elif "hurricane" in link or "tropical_storm" in link:
         icon = "static/assets/hurricane.png"
-    elif "dust" or "smoke" or "haze" in link:
-        if "day" in link:
-            icon = "static/assets/sun_hazy.png"
-        else:
-            icon = "static/assets/moon_hazy.png"
+    elif any(term in link for term in ["dust", "smoke", "haze"]):
+        icon = "static/assets/sun_hazy.png" if "day" in link else "static/assets/moon_hazy.png"
     elif "blizzard" in link:
         icon = "static/assets/snow.png"
     elif "fog" in link:
-        if "day" in link:
-            icon = "static/assets/sun_fog.png"
-        else:
-            icon = "static/assets/moon_fog.png"
+        icon = "static/assets/sun_fog.png" if "day" in link else "static/assets/moon_fog.png"
     else:
         icon = "static/assets/day_clear.png"
 
