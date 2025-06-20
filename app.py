@@ -146,6 +146,7 @@ def get_forecast():
     current_icon = determine_icon(obs_data['properties']['icon'])
 
     return jsonify({
+        "alerts": organized_alerts,
         "current": {
             "temperature": temperature,
             "dewpoint": dewpoint,
@@ -174,7 +175,7 @@ def get_forecast():
             "is_daytime": daily_forecasts[1]['is_daytime'],
             "precip_chance": daily_forecasts[1]['precipitation_chance'],
             "text": daily_forecasts[1]['detailed_forecast'],
-            "icon": determine_icon(daily_forecasts[0]['icon'])
+            "icon": determine_icon(daily_forecasts[1]['icon'])
         }, 
         "third_period": {
             "title": daily_forecasts[2]['name'],
@@ -184,7 +185,7 @@ def get_forecast():
             "is_daytime": daily_forecasts[2]['is_daytime'],
             "precip_chance": daily_forecasts[2]['precipitation_chance'],
             "text": daily_forecasts[2]['detailed_forecast'],
-            "icon": determine_icon(daily_forecasts[0]['icon'])
+            "icon": determine_icon(daily_forecasts[2]['icon'])
 
         }, 
         "fourth_period": {
@@ -195,7 +196,7 @@ def get_forecast():
             "is_daytime": daily_forecasts[3]['is_daytime'],
             "precip_chance": daily_forecasts[3]['precipitation_chance'],
             "text": daily_forecasts[3]['detailed_forecast'],
-            "icon": determine_icon(daily_forecasts[0]['icon'])
+            "icon": determine_icon(daily_forecasts[3]['icon'])
         }
     })
 

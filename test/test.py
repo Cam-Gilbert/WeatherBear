@@ -30,7 +30,7 @@ def test_get_forecast_office():
 #data = test_get_forecast_office()
 
 def test_get_forecast():
-    df = Data_Fetcher("Raleigh")
+    df = Data_Fetcher("Waterloo")
     forecast_discussion, organized_alerts, daily_forecasts, obs_data = df.get_forecast()
 
     return forecast_discussion, organized_alerts, daily_forecasts, obs_data

@@ -14,6 +14,32 @@ export function fetchAndRenderForecast(payload) {
 
       const unit = payload.units === "metric" ? "C" : "F";
 
+      // Clear old alerts
+      const alertsContainer = document.getElementById("alerts_container");
+      alertsContainer.innerHTML = "";
+
+      if (data.alerts && data.alerts.length > 0) {
+        data.alerts.forEach((alert, index) => {
+          const alertBox = document.createElement("div");
+          alertBox.className = "w-full bg-red-500 text-white px-3 rounded-md shadow-lg cursor-pointer transition-all duration-300 hover:bg-red-700 hover:shadow-xl";
+
+          alertBox.innerHTML = `
+            <div class="font-bold text-md">${alert.headline}</div>
+            <div id="alert-detail-${index}" class="hidden mt-2 space-y-2 text-sm">
+              <div>${alert.description}</div>
+              <div>${alert.instruction}</div>
+            </div>
+          `;
+
+          alertBox.addEventListener("click", () => {
+            const detail = document.getElementById(`alert-detail-${index}`);
+            detail.classList.toggle("hidden");
+          });
+
+          alertsContainer.appendChild(alertBox);
+        });
+      }
+
       // Current Conditions
       document.querySelector(".current-panel").innerHTML = `
         <h2 class="text-xl font-bold mb-2">Current Conditions</h2>
@@ -22,6 +48,7 @@ export function fetchAndRenderForecast(payload) {
           <div>
             <p class="text-4xl font-semibold">${data.current.temperature}°${unit}</p>
             <p>${data.current.clouds}</p>
+            <p>${data.current.text}</p>
           </div>
         </div>
         <p class="mt-2">Dewpoint: ${data.current.dewpoint}°${unit}</p>

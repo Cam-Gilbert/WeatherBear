@@ -86,15 +86,23 @@ class Summarizer:
                                 Maintain a consistent tone and structure.
 
                                 The area forecast discussion is as follows\n"""
+        elif self.weather_knowledge == "no_summary":
+            afd = ""
 
 
         afd += "\n" + self.afd
 
-        ### Pass Message to LLM and return response
-        messages = [{"role": "system", "content": prompt_string},
-                    {"role": "user", "content": afd}]
-        
-        response = requests.post("http://127.0.0.1:5000/openai", json={"messages": messages})
+        ### Pass Message to LLM and return response if summary requested 
+        if self.weather_knowledge == "no_summary":
+            text = afd
+        else:
+            messages = [{"role": "system", "content": prompt_string},
+                        {"role": "user", "content": afd}]
+            
+            response = requests.post("http://127.0.0.1:5000/openai", json={"messages": messages})
 
-        return response.json().get("summary")
+            text = response.json().get("summary")
+        
+
+        return text
 

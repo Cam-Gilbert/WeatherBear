@@ -14,12 +14,12 @@
     <div class="text-center md:text-left flex-1">
       <h2 class="text-3xl font-bold text-gray-800 mb-3">WeatherBear</h2>
       <p class="text-gray-600 text-lg leading-relaxed">
-        The idea for WeatherBear came from my desire to read the National Weather Service forecast discussion on my phone each morning. While it's possible to access these discussions on weather.gov, the site is famously not mobile-friendly, and I got tired of swiping all over the place just to read a paragraph. Originally, WeatherBear was simply an email bot that sent the AFD each morning. Then I realized the potential for these discussions to serve as a learning tool if summarized at varying levels. So, I implemented OpenAI’s GPT-4.1-mini model via their API and added that functionality to the email bot. Eventually, I realized that others might benefit from this tool too, and that signing up for an email list felt a bit outdated, so I created the website. Now, anyone can get custom forecasts for anywhere serviced by the National Weather Service at any time.
+        The idea for WeatherBear came from my desire to read the National Weather Service forecast discussion on my phone each morning. While it's possible to access these discussions on weather.gov, the site is famously not mobile-friendly, and I got tired of swiping all over the place just to read a paragraph. Originally, WeatherBear was simply an email bot that sent the AFD each morning. Then I realized the potential for these discussions to serve as a learning tool if summarized at varying levels. So, I implemented OpenAI’s GPT-4.1-mini model via their API and added that functionality to the email bot. Eventually, I realized that others might benefit from this tool too, and that signing up for an email list felt a bit outdated, so I created the website. Now, anyone can get custom forecasts for anywhere serviced by the National Weather Service at any time. NOTE - This is very much still in beta, I cannot promise that all functionality will work 100% correctly 100% of the time. 
       </p>
     </div>
   </div>
 
-  <!-- Developer Section -->
+  <!-- About Me Section -->
   <div class="flex flex-col md:flex-row bg-white rounded-xl shadow-lg p-8 min-h-[200px] items-center justify-between w-full">
     <!-- Text -->
     <div class="text-center md:text-left flex-1 md:mr-8">
@@ -30,6 +30,20 @@
         sharp over the summer break, but quickly turned into a passion project. I have many more ideas for the site, many of which I will likely never get to, 
         and I look forward to continuing development on this project.
       </p>
+      <div class="flex justify-center md:justify-start space-x-4 mt-4">
+        <!-- linkedIn link -->
+        <a href="https://linkedin.com/in/cameron-gilbert-461a81252" target="_blank" rel="noopener noreferrer">
+          <img src="{{ url_for('static', filename='assets/linkedIn_logo.svg') }}" alt="LinkedIn" class="w-8 h-8 hover:opacity-80 transition">
+        </a>
+
+        <!-- git link -->
+        <a href="https://github.com/Cam-Gilbert" target="_blank" rel="noopener noreferrer">
+          <svg class="w-8 h-8 text-gray-700 hover:text-gray-900 transition" fill="currentColor" viewBox="0 0 24 24">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+              d="M12 2C6.48 2 2 6.58 2 12.25c0 4.5 2.87 8.32 6.84 9.67.5.1.66-.22.66-.49 0-.24-.01-.9-.01-1.76-2.78.61-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1.01.07 1.54 1.07 1.54 1.07.9 1.57 2.36 1.12 2.94.86.09-.66.35-1.12.63-1.37-2.22-.26-4.56-1.13-4.56-5.02 0-1.11.39-2.01 1.03-2.71-.1-.26-.45-1.31.1-2.71 0 0 .84-.28 2.75 1.04a9.53 9.53 0 0 1 5 0c1.91-1.32 2.75-1.04 2.75-1.04.55 1.4.2 2.45.1 2.71.64.7 1.03 1.6 1.03 2.71 0 3.9-2.34 4.76-4.57 5.01.36.32.68.94.68 1.89 0 1.36-.01 2.46-.01 2.8 0 .27.17.59.68.49A10.01 10.01 0 0 0 22 12.25C22 6.58 17.52 2 12 2z"/>
+          </svg>
+        </a>
+      </div>
     </div>
 
     <!-- Photo -->
