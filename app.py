@@ -14,7 +14,9 @@ app.secret_key = os.getenv("SECRET_KEY")
 
 @app.route("/openai", methods=["POST"])
 def proxy_openai():
-    ''' Function to interact with openai api '''
+    ''' Function to interact with openai api 
+    WAS USED IN DEVELOPMENT BUT NOT CURRENTLY USED
+    '''
     try:
         text = request.get_json()
         messages = text.get("messages")

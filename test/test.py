@@ -51,7 +51,7 @@ def test_summarizer():
 #print(summary)
 
 def test_emailer():
-    user = User("Chris", "Raleigh", "gilbertchristopher630@gmail.com", preferences={"units": "imperial", "weather_knowledge": "moderate"})
+    user = User("Chris", "Raleigh", "gilbertcameron03@gmail.com", preferences={"units": "imperial", "weather_knowledge": "moderate"})
     df = Data_Fetcher(user.location)
     forecast_discussion, organized_alerts, daily_forecasts, obs_data = df.get_forecast()
     summarizer = Summarizer(user.preferences["weather_knowledge"], forecast_discussion)
@@ -62,6 +62,6 @@ def test_emailer():
 
     return email, user, forecast_discussion, obs_data
 
-#email, user, forecast_discussion, obs_data = test_emailer()
+email, user, forecast_discussion, obs_data = test_emailer()
 
 #print(email)

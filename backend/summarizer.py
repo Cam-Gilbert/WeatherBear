@@ -1,4 +1,6 @@
 import requests
+import openai
+import os
 
 class Summarizer:
     def __init__(self, weather_knowledge, afd):
@@ -96,12 +98,22 @@ class Summarizer:
         if self.weather_knowledge == "no_summary":
             text = afd
         else:
-            messages = [{"role": "system", "content": prompt_string},
-                        {"role": "user", "content": afd}]
-            
-            response = requests.post("http://127.0.0.1:5000/openai", json={"messages": messages})
+            openai.api_key = os.getenv("API_KEY")  # Ensure this matches your env var name on Render
 
-            text = response.json().get("summary")
+            messages = [
+                {"role": "system", "content": prompt_string},
+                {"role": "user", "content": afd}
+            ]
+            try:
+                response = openai.chat.completions.create(
+                    model="gpt-4.1-mini",  # or "gpt-4.0", "gpt-4.0-turbo", or whatever model you prefer
+                    messages=messages,
+                    temperature=0.7
+                )
+                text = response.choices[0].message.content.strip()
+            except Exception as e:
+                print(f"OpenAI API Error: {e}")
+                text = "There was an error generating the summary."
         
 
         return text
