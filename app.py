@@ -77,7 +77,9 @@ def submit_emailbot():
             "times_sent": []
         }
     )
+    print(user)
     users = load_users()
+    print(users)
     existing_user = find_user_by_email(user.email, users)
     if existing_user:
         users = [u for u in users if u.email != user.email]
@@ -85,6 +87,7 @@ def submit_emailbot():
     else:
         flash("You have successsfully signed up!", "signup")
     users.append(user)
+    print(users)
     save_users(users)
     return redirect(url_for("emailbot"))
 
