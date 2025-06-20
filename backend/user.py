@@ -7,7 +7,8 @@ import os
 from requests.exceptions import HTTPError, Timeout, RequestException
 from zoneinfo import ZoneInfo
 from datetime import datetime, timezone
-
+import psycopg2
+from psycopg2.extras import Json
 ''' 
 User Object for WeatherBear Project. Will contain information on users name, location, unit preferance, email address, 
 and a level of weather knowledge
@@ -19,6 +20,7 @@ EMAIL_REGEX = re.compile(r"^\S+@\S+\.\S+$")
 _geolocator = Nominatim(user_agent="weatherbear")
 _tz_finder = TimezoneFinder()
 USER_PATH = "users.json"
+DATABASE_URL = os.getenv("DATABASE_URL") 
 
 class User:
     def __init__(self, name, location, email, preferences=None):
@@ -141,22 +143,49 @@ class User:
         }
 
 def load_users():
-    ''' Loads users from users.json file '''
-    if not os.path.exists("users.json"):
-        return []
-    with open(USER_PATH, "r") as f:
-        data = json.load(f)
-        return [User(
-            name=u["name"],
-            location=u["location"],
-            email=u["email"],
-            preferences=u.get("preferences", {})
-        ) for u in data]
+    ''' Loads users from the database '''
+    users = []
+    try:
+        conn = psycopg2.connect(DATABASE_URL)
+        cur = conn.cursor()
+        cur.execute("SELECT name, location, email, preferences, time_zone FROM users")
+        rows = cur.fetchall()
+        for name, location, email, preferences, time_zone in rows:
+            user = User(name=name, location=location, email=email, preferences=preferences)
+            user.timeZone = time_zone  # Override geolocation-based timezone
+            users.append(user)
+        cur.close()
+        conn.close()
+    except Exception as e:
+        print(f"Failed to load users from DB: {e}")
+    return users
         
 def save_users(users):
-        ''' Saves users to users.json file '''
-        with open(USER_PATH, "w") as f:
-            json.dump([u.__dict__ for u in users], f, indent=2)
+    ''' Handles saving users to database '''
+    try:
+        conn = psycopg2.connect(DATABASE_URL)
+        cur = conn.cursor()
+        for user in users:
+            cur.execute("""
+                INSERT INTO users (email, name, location, preferences, time_zone)
+                VALUES (%s, %s, %s, %s, %s)
+                ON CONFLICT (email)
+                DO UPDATE SET name = EXCLUDED.name,
+                              location = EXCLUDED.location,
+                              preferences = EXCLUDED.preferences,
+                              time_zone = EXCLUDED.time_zone;
+            """, (
+                user.email,
+                user.name,
+                user.location,
+                Json(user.preferences),
+                user.timeZone
+            ))
+        conn.commit()
+        cur.close()
+        conn.close()
+    except Exception as e:
+        print(f"Failed to save users to DB: {e}")
     
 def find_user_by_email(email, users):
         ''' Finds a user by email address '''
@@ -164,3 +193,4 @@ def find_user_by_email(email, users):
             if user.email == email:
                 return user
         return None
+
