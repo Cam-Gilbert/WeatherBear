@@ -153,7 +153,8 @@ def load_users():
             name=user_dict["name"],
             location=user_dict["location"],
             email=user_dict["email"],
-            preferences=user_dict.get("preferences", {})
+            preferences=user_dict.get("preferences", {}),
+            timeZone=user_dict.get("timeZone")
         ) for user_dict in users_data]
     except FileNotFoundError:
         return []

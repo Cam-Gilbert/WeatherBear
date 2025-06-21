@@ -282,7 +282,7 @@ def determine_icon(link):
 
 # start scheduler when Flask starts
 scheduler = BackgroundScheduler()
-scheduler.add_job(func=main_loop, trigger="interval", seconds=30)
+scheduler.add_job(func=main_loop, trigger="interval", seconds=120)
 scheduler.start()
 
 atexit.register(lambda: scheduler.shutdown())
