@@ -154,9 +154,10 @@ def load_users():
         return []
         
 def save_users(users):
-    ''' Handles saving users to database '''
+    ''' Handles saving users to db '''
+    os.makedirs(os.path.dirname(USER_PATH), exist_ok=True)
     with open(USER_PATH, "w") as f:
-        json.dump([user.to_dict() for user in users], f, indent=2)
+        json.dump([u.to_dict() for u in users], f, indent=2)
     
 def find_user_by_email(email, users):
         ''' Finds a user by email address '''

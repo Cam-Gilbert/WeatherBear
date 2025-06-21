@@ -21,7 +21,7 @@ def main_loop():
             save_users(users)
 
         # sleep for one hour before checking if sending is necessary again
-        time.sleep(3600)
+        time.sleep(30) # change back to 3600 after testing is complete
     
 def send_email_to_user(user):
     '''
