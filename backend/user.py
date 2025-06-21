@@ -20,7 +20,7 @@ _tz_finder = TimezoneFinder()
 USER_PATH = "/mnt/data/users.json"
 
 class User:
-    def __init__(self, name, location, email, preferences=None):
+    def __init__(self, name, location, email, preferences = None, timeZone = None):
         self.name = name
         self.location = location
         # check that email is valid
@@ -29,7 +29,7 @@ class User:
         
         self.email = email
         self.preferences = preferences or {}
-        self.timeZone = self.get_time_zone()
+        self.timeZone = timeZone or self.get_time_zone()
 
     @property
     def units(self):
