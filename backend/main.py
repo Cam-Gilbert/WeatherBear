@@ -1,10 +1,10 @@
 import json
 import time
 from datetime import datetime
-from data_fetcher import Data_Fetcher
-from summarizer import Summarizer
-from emailer import Emailer
-from user import User, load_users, save_users
+from backend.data_fetcher import Data_Fetcher
+from backend.summarizer import Summarizer
+from backend.emailer import Emailer
+from backend.user import User, load_users, save_users
 
 def main_loop():
     while True:
