@@ -4,7 +4,7 @@ from datetime import datetime
 from data_fetcher import Data_Fetcher
 from summarizer import Summarizer
 from emailer import Emailer
-from user import User
+from user import User, load_users, save_users
 
 def main_loop():
     while True:
@@ -22,38 +22,6 @@ def main_loop():
 
         # sleep for one hour before checking if sending is necessary again
         time.sleep(3600)
-
-
-def load_users(path="users.json"):
-    ''' responsible for loading users from users.json '''
-    try:
-        with open(path, "r") as f:
-            users = json.load(f)
-            return [User(
-                name=user["name"],
-                location=user["location"],
-                email=user["email"],
-                preferences=user.get("preferences", {})
-            ) for user in users]
-    except Exception as e:
-        print(f"Failed to load users: {e}")
-        return []
-    
-def save_users(users, path="users.json"):
-    ''' Saves users from the user dictionary into the users.json file for storage '''
-    try:
-        user_dicts = []
-        for user in users:
-            user_dicts.append({
-                "name": user.name,
-                "location": user.location,
-                "email": user.email,
-                "preferences": user.preferences
-            })
-        with open(path, "w") as f:
-            json.dump(user_dicts, f, indent=2)
-    except Exception as e:
-        print(f"failed to save users: {e}")
     
 def send_email_to_user(user):
     '''

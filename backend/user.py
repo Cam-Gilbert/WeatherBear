@@ -7,8 +7,6 @@ import os
 from requests.exceptions import HTTPError, Timeout, RequestException
 from zoneinfo import ZoneInfo
 from datetime import datetime, timezone
-import psycopg2
-from psycopg2.extras import Json
 ''' 
 User Object for WeatherBear Project. Will contain information on users name, location, unit preferance, email address, 
 and a level of weather knowledge
@@ -19,8 +17,7 @@ Weather knowledge will be set to moderate by default
 EMAIL_REGEX = re.compile(r"^\S+@\S+\.\S+$")
 _geolocator = Nominatim(user_agent="weatherbear")
 _tz_finder = TimezoneFinder()
-USER_PATH = "users.json"
-DATABASE_URL = os.getenv("DATABASE_URL") 
+USER_PATH = "/mnt/data/users.json"
 
 class User:
     def __init__(self, name, location, email, preferences=None):
@@ -144,48 +141,22 @@ class User:
 
 def load_users():
     ''' Loads users from the database '''
-    users = []
+    if not os.path.exists(USER_PATH):
+        print("creating empty one")
+        with open(USER_PATH, "w") as f:
+            json.dump([], f)
+
     try:
-        conn = psycopg2.connect(DATABASE_URL)
-        cur = conn.cursor()
-        cur.execute("SELECT name, location, email, preferences, time_zone FROM users")
-        rows = cur.fetchall()
-        for name, location, email, preferences, time_zone in rows:
-            user = User(name=name, location=location, email=email, preferences=preferences)
-            user.timeZone = time_zone  # Override geolocation-based timezone
-            users.append(user)
-        cur.close()
-        conn.close()
-    except Exception as e:
-        print(f"Failed to load users from DB: {e}")
-    return users
+        with open(USER_PATH, "r") as f:
+            users_data = json.load(f)
+        return [User(**user_dict) for user_dict in users_data]
+    except FileNotFoundError:
+        return []
         
 def save_users(users):
     ''' Handles saving users to database '''
-    try:
-        conn = psycopg2.connect(DATABASE_URL)
-        cur = conn.cursor()
-        for user in users:
-            cur.execute("""
-                INSERT INTO users (email, name, location, preferences, time_zone)
-                VALUES (%s, %s, %s, %s, %s)
-                ON CONFLICT (email)
-                DO UPDATE SET name = EXCLUDED.name,
-                              location = EXCLUDED.location,
-                              preferences = EXCLUDED.preferences,
-                              time_zone = EXCLUDED.time_zone;
-            """, (
-                user.email,
-                user.name,
-                user.location,
-                Json(user.preferences),
-                user.timeZone
-            ))
-        conn.commit()
-        cur.close()
-        conn.close()
-    except Exception as e:
-        print(f"Failed to save users to DB: {e}")
+    with open(USER_PATH, "w") as f:
+        json.dump([user.to_dict() for user in users], f, indent=2)
     
 def find_user_by_email(email, users):
         ''' Finds a user by email address '''
