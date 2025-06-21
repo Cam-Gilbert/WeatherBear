@@ -16,7 +16,11 @@
       <div class="flex items-center space-x-6">
         <!-- Mobile menu button -->
         <div class="sm:hidden">
-          <button id="mobile-menu-button" type="button" class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+          <button
+            type="button"
+            id="mobile-menu-button"
+            class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+          >
             <span class="sr-only">Open main menu</span>
             <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16" />
@@ -30,10 +34,10 @@
         </a>
 
         <!-- Links -->
-        <div id="mobile-menu" class="hidden sm:flex sm:space-x-4 flex-col sm:flex-row">
-          <a href="{{ url_for('homepage') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium flex items-center">Home</a>
-          <a href="{{ url_for('emailbot') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium flex items-center">Email Bot</a>
-          <a href="{{ url_for('about') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium flex items-center">About</a>
+        <div class="hidden sm:flex space-x-4">
+          <a href="{{ url_for('homepage') }}" class="...">Home</a>
+          <a href="{{ url_for('emailbot') }}" class="...">Email Bot</a>
+          <a href="{{ url_for('about') }}" class="...">About</a>
         </div>
       </div>
 
@@ -55,6 +59,12 @@
         </a>
       </div>
 
+      <!-- This should be only sohown when on mobile-->
+      <div id="mobile-menu" class="sm:hidden hidden flex-col space-y-2 mt-2">
+        <a href="{{ url_for('homepage') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">Home</a>
+        <a href="{{ url_for('emailbot') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">Email Bot</a>
+        <a href="{{ url_for('about') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">About</a>
+      </div>
     </div>
   </nav>
 
@@ -65,13 +75,9 @@
 
     <!-- script to handle mobile menu -->
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const menuButton = document.getElementById("mobile-menu-button");
-      const menu = document.getElementById("mobile-menu");
-
-      menuButton.addEventListener("click", () => {
-        menu.classList.toggle("hidden");
-      });
+    document.getElementById('mobile-menu-button').addEventListener('click', () => {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('hidden');
     });
   </script>
 </body>
