@@ -149,7 +149,12 @@ def load_users():
     try:
         with open(USER_PATH, "r") as f:
             users_data = json.load(f)
-        return [User(**user_dict) for user_dict in users_data]
+        return [User(
+            name=user_dict["name"],
+            location=user_dict["location"],
+            email=user_dict["email"],
+            preferences=user_dict.get("preferences", {})
+        ) for user_dict in users_data]
     except FileNotFoundError:
         return []
         

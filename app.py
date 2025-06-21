@@ -2,9 +2,13 @@ from flask import Flask, request, jsonify, render_template, redirect, url_for, f
 import openai
 import os
 from dotenv import load_dotenv
+from apscheduler.schedulers.background import BackgroundScheduler
+import atexit
 from backend.data_fetcher import Data_Fetcher
 from backend.user import User, load_users, save_users, find_user_by_email
 from backend.summarizer import Summarizer
+from backend.main import main_loop
+
 
 load_dotenv()
 openai.api_key = os.getenv("API_KEY")
@@ -275,6 +279,13 @@ def determine_icon(link):
         icon = "static/assets/day_clear.png"
 
     return icon
+
+# start scheduler when Flask starts
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=main_loop, trigger="interval", seconds=30)
+scheduler.start()
+
+atexit.register(lambda: scheduler.shutdown())
 
 
 if __name__ == "__main__":

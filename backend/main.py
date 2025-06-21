@@ -45,4 +45,5 @@ def send_email_to_user(user):
         print(f"Failed to send email to {user.email}: {e}")
 
 if __name__ == "__main__":
-    main_loop()
+    pass
+    #main_loop()
