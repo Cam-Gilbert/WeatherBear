@@ -58,15 +58,15 @@
           </svg>
         </a>
       </div>
-
-      <!-- This should be only sohown when on mobile-->
-      <div id="mobile-menu" class="sm:hidden fixed top-0 left-0 h-full w-64 bg-gray-800 transform -translate-x-full transition-transform duration-300 z-50 p-6 flex flex-col space-y-4">
-        <a href="{{ url_for('homepage') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">Home</a>
-        <a href="{{ url_for('emailbot') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">Email Bot</a>
-        <a href="{{ url_for('about') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">About</a>
-      </div>
     </div>
   </nav>
+
+  <!-- This should be only sohown when on mobile-->
+  <div id="mobile-menu" class="sm:hidden fixed top-0 left-0 h-full w-64 bg-gray-800 transform -translate-x-full transition-transform duration-300 z-50 p-6 flex flex-col space-y-4">
+    <a href="{{ url_for('homepage') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">Home</a>
+    <a href="{{ url_for('emailbot') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">Email Bot</a>
+    <a href="{{ url_for('about') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">About</a>
+  </div>
 
   <!-- Page content -->
   <main class="p-4">
@@ -74,14 +74,13 @@
   </main>
 
     <!-- script to handle mobile menu -->
-    <script>
-      const menuBtn = document.getElementById('mobile-menu-button');
-      const menu = document.getElementById('mobile-menu');
+  <script>
+    const menuBtn = document.getElementById('mobile-menu-button');
+    const menu = document.getElementById('mobile-menu');
 
-      menuBtn.addEventListener('click', () => {
-        menu.classList.toggle('-translate-x-full');
-        menu.classList.toggle('translate-x-0');
-      });
-    </script>
+    menuBtn.addEventListener('click', () => {
+      menu.classList.toggle('hidden');
+    });
+  </script>
 </body>
 </html>
