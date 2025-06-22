@@ -168,7 +168,7 @@ def save_users(users):
 def find_user_by_email(email, users):
         ''' Finds a user by email address '''
         for user in users:
-            if user.email == email:
+            if user.email.lower() == email.lower():
                 return user
         return None
 
