@@ -90,8 +90,24 @@
     const menuBtn = document.getElementById('mobile-menu-button');
     const menu = document.getElementById('mobile-menu');
 
-    menuBtn.addEventListener('click', () => {
-      menu.classList.toggle('hidden');
+    // Toggle menu on button click
+    menuBtn.addEventListener('click', (event) => {
+      event.stopPropagation(); // Prevent it from bubbling to document
+      menu.classList.toggle('-translate-x-full');
+      menu.classList.toggle('translate-x-0');
+    });
+
+    // Prevent clicks inside menu from closing it
+    menu.addEventListener('click', (event) => {
+      event.stopPropagation();
+    });
+
+    // Close menu if click happens outside of it
+    document.addEventListener('click', () => {
+      if (menu.classList.contains('translate-x-0')) {
+        menu.classList.remove('translate-x-0');
+        menu.classList.add('-translate-x-full');
+      }
     });
   </script>
 </body>
