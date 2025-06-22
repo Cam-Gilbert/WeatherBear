@@ -81,6 +81,9 @@ class Emailer:
 
         email_string += "\n\nStay weather aware!\n- WeatherBear 🐻"
 
+        #unsubscribe link
+        email_string += "\n\n\nNo longer want forecasts? Unsubscribe at https://weatherbear.org/emailbot"
+
         return email_string
 
     def send_email(self):
