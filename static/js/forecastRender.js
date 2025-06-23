@@ -21,7 +21,7 @@ export function fetchAndRenderForecast(payload) {
       if (data.alerts && data.alerts.length > 0) {
         data.alerts.forEach((alert, index) => {
           const alertBox = document.createElement("div");
-          alertBox.className = "w-full bg-red-500 text-white px-3 rounded-md shadow-lg cursor-pointer transition-all duration-300 hover:bg-red-700 hover:shadow-xl";
+          alertBox.className = "w-full bg-red-500 text-white px-3 rounded-md shadow-lg cursor-pointer transition-all duration-300 hover:bg-red-700 hover:shadow-xl mb-2";
 
           alertBox.innerHTML = `
             <div class="font-bold text-md">${alert.headline}</div>
