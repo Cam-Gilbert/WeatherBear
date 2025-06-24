@@ -1,3 +1,4 @@
+
 export function fetchAndRenderForecast(payload) {
   console.log("fetch initiated with data:", payload);
   fetch("/get-forecast", {

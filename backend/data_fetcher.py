@@ -13,13 +13,14 @@ class Data_Fetcher:
     methods but the main method is get_forecast(), it returns all of the data that is needed to generate emails 
     and interact with the LLM
     '''
-    def __init__(self, location):
+    def __init__(self, location, units):
         '''
         Data_Fetcher object initialization method (constructor)
 
         @param location users zipcode, city, address, etc...
         '''
         self.location = location
+        self.units = units 
 
     def get_forecast(self):
         '''
@@ -89,6 +90,7 @@ class Data_Fetcher:
 
         # Get Weather Forecasts
         url = f"{BASE_URL}/gridpoints/{forecast_office}/{gridX},{gridY}/forecast"
+        url = self.check_units(url)        
         forecast_data = self.make_request(url, USER_AGENT)
         daily_forecasts = []
 
@@ -109,12 +111,17 @@ class Data_Fetcher:
             }
             daily_forecasts.append(forecast)
 
+        # Get hourly forecasts
+        url = f"{BASE_URL}/gridpoints/{forecast_office}/{gridX},{gridY}/forecast/hourly"
+        url = self.check_units(url)
+        hourly_forecast = self.make_request(url, USER_AGENT)
+
         # Get closest observations
         obs_id = obs_station['properties']['stationIdentifier']
         url = f"{BASE_URL}/stations/{obs_id}/observations/latest"
         obs_data = self.make_request(url, USER_AGENT)
 
-        return forecast_discussion, organized_alerts, daily_forecasts, obs_data
+        return forecast_discussion, organized_alerts, daily_forecasts, obs_data, hourly_forecast
         
 
 
@@ -217,3 +224,12 @@ class Data_Fetcher:
         c = 2 * math.asin(math.sqrt(a))
         r = 6371
         return c * r
+    
+    def check_units(self, url):
+        ''' Checks units preference and pulls si units if necessary.'''
+        if self.units == "metric":
+            url += "?units=si"
+
+        return url
+    
+            

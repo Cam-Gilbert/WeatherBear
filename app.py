@@ -118,8 +118,8 @@ def get_forecast():
     elif location:
         loc = location
 
-    df = Data_Fetcher(loc)
-    forecast_discussion, organized_alerts, daily_forecasts, obs_data = df.get_forecast()
+    df = Data_Fetcher(loc, units)
+    forecast_discussion, organized_alerts, daily_forecasts, obs_data, hourly_forecast = df.get_forecast()
 
     if units == "imperial":
         temp_unit = "F"
@@ -141,7 +141,11 @@ def get_forecast():
             temperature = obs_data['properties']['temperature']['value']
             dewpoint = obs_data['properties']['dewpoint']['value']
             windChill = obs_data['properties']['windChill']['value']
+            if windChill is not None:
+                windChill = round(windChill)
             heatIndex = obs_data['properties']['heatIndex']['value']
+            if heatIndex is not None:
+                heatIndex = round(heatIndex)
             station = obs_data['properties']['stationName']
             clouds = obs_data['properties']['textDescription']
 
@@ -224,8 +228,8 @@ def get_summary():
     else:
         return jsonify({"error": "No location provided"}), 400
 
-    df = Data_Fetcher(loc)
-    forecast_discussion, organized_alerts, daily_forecasts, obs_data = df.get_forecast()
+    df = Data_Fetcher(loc, units)
+    forecast_discussion, organized_alerts, daily_forecasts, obs_data, hourly_forecast = df.get_forecast()
     if forecast_discussion is not None:
         summarizer = Summarizer(expertise, forecast_discussion)
     else:
@@ -281,11 +285,11 @@ def determine_icon(link):
     return icon
 
 # start scheduler when Flask starts
-scheduler = BackgroundScheduler()
-scheduler.add_job(func=main_loop, trigger="interval", seconds=120)
-scheduler.start()
+#scheduler = BackgroundScheduler()
+#scheduler.add_job(func=main_loop, trigger="interval", seconds=120)
+#scheduler.start()
 
-atexit.register(lambda: scheduler.shutdown())
+#atexit.register(lambda: scheduler.shutdown())
 
 
 if __name__ == "__main__":
