@@ -2,6 +2,7 @@ from backend.data_fetcher import Data_Fetcher
 from backend.summarizer import Summarizer
 from backend.emailer import Emailer
 from backend.user import User
+from datetime import datetime
 
 def test_get_latlon():
     df = Data_Fetcher("Pinehurst")
@@ -65,3 +66,4 @@ def test_emailer():
 #email, user, forecast_discussion, obs_data = test_emailer()
 
 #print(email)
+
