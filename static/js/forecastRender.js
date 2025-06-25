@@ -89,7 +89,7 @@ export function fetchAndRenderForecast(payload) {
       // Re-add the chart containers after wiping them out
       document.querySelector(".firstPeriod-panel").insertAdjacentHTML("beforeend", `
         <div id="first-chart-container" class="hidden mt-4">
-          <div class="flex flex-wrap gap-4">
+          <div class="flex flex-col md:flex-row gap-4">
             <div class="w-full md:w-1/2">
               <canvas id="first-chart" class="w-full h-48"></canvas>
             </div>
@@ -230,7 +230,7 @@ export function toggleChart(id, ...initialVariables) {
 
   // --- CREATE CHART ROW CONTAINER ---
   const chartRow = document.createElement("div");
-  chartRow.className = "flex gap-4 flex-row md:flex-nowrap flex-wrap items-start";
+  chartRow.className = "flex flex-col md:flex-row gap-4";
 
   container.appendChild(selectorRow);
   container.appendChild(chartRow);
@@ -271,7 +271,7 @@ export function toggleChart(id, ...initialVariables) {
       });
 
       const wrapper = document.createElement("div");
-      wrapper.className = "flex-1 min-w-0";
+      wrapper.className = "w-full md:w-1/2";
 
       const canvas = document.createElement("canvas");
       canvas.className = "w-full h-48";
