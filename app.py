@@ -312,11 +312,11 @@ def make_hourly_split(start_time, end_time, hourly_forecast):
 
 
 # start scheduler when Flask starts
-#scheduler = BackgroundScheduler()
-#scheduler.add_job(func=main_loop, trigger="interval", seconds=120)
-#scheduler.start()
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=main_loop, trigger="interval", seconds=120)
+scheduler.start()
 
-#atexit.register(lambda: scheduler.shutdown())
+atexit.register(lambda: scheduler.shutdown())
 
 
 if __name__ == "__main__":

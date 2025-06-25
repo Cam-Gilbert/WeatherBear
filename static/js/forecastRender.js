@@ -1,4 +1,10 @@
 
+const hourlyData = {
+  first: [],
+  second: [],
+  third: []
+};
+
 export function fetchAndRenderForecast(payload) {
   console.log("fetch initiated with data:", payload);
   fetch("/get-forecast", {
@@ -75,6 +81,147 @@ export function fetchAndRenderForecast(payload) {
       document.querySelector(".firstPeriod-panel").innerHTML = formatPeriod(data.first_period);
       document.querySelector(".secondPeriod-panel").innerHTML = formatPeriod(data.second_period);
       document.querySelector(".thirdPeriod-panel").innerHTML = formatPeriod(data.third_period);
+
+      // Re-add the chart containers after wiping them out
+      document.querySelector(".firstPeriod-panel").insertAdjacentHTML("beforeend", `
+        <div id="first-chart-container" class="hidden mt-4">
+          <canvas id="first-chart" class="w-full h-64"></canvas>
+        </div>
+      `);
+
+      document.querySelector(".secondPeriod-panel").insertAdjacentHTML("beforeend", `
+        <div id="second-chart-container" class="hidden mt-4">
+          <canvas id="second-chart" class="w-full h-64"></canvas>
+        </div>
+      `);
+
+      document.querySelector(".thirdPeriod-panel").insertAdjacentHTML("beforeend", `
+        <div id="third-chart-container" class="hidden mt-4">
+          <canvas id="third-chart" class="w-full h-64"></canvas>
+        </div>
+      `);
+
+      // save hourly data to global list so chart function can see it
+      hourlyData.first = data.first_period.hourly_forecast;
+      hourlyData.second = data.second_period.hourly_forecast;
+      hourlyData.third = data.third_period.hourly_forecast;
     })
     .catch(err => console.error("Fetch Error:", err));
 }
+
+
+export function toggleChart(id, variable) {
+  const container = document.getElementById(`${id}-chart-container`);
+  container.classList.toggle("hidden");
+
+  if (container.dataset.rendered) {
+    return;
+  }
+
+  let plot_color;
+
+  if (variable === "temperature") {
+    plot_color = "#c10007";
+  } else if (variable === "probabilityOfPrecipitation") {
+    plot_color = "#155dfc";
+  } else if (variable === "relativeHumidity") {
+    plot_color = "#008236";
+  } else if (variable === "windSpeed") {
+    plot_color = "#9f2d00";
+  } else if (variable === "dewpoint") {
+    plot_color = "#004f3b";
+  } else {
+    plot_color = "#3b82f6";
+  }
+
+  const hourly = hourlyData[id]
+  if (!hourly || hourly.length === 0) return;
+
+  const labels = hourly.map(h => new Date(h.startTime).toLocaleTimeString([], {hour: 'numeric'}));
+  const values = hourly.map(h => h[variable]);
+
+  console.log(`Rendering chart for ${id}`, { labels, values });
+  const ctx = document.getElementById(`${id}-chart`).getContext("2d");
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [{
+        label: variable.charAt(0).toUpperCase() + variable.slice(1),
+        data: values,
+        borderColor: plot_color,
+        tension: 0.4,
+        fill: true,
+        pointRadius: 3,
+        pointHoverRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          labels: {
+            color: "#1f2937", // text-gray-800
+            font: {
+              size: 14,
+              family: "'Inter', sans-serif", // match Tailwind body
+              weight: "600"
+            }
+          }
+        },
+        tooltip: {
+          backgroundColor: "#1f2937", // dark gray
+          titleColor: "#fff",
+          bodyColor: "#d1d5db", // gray-300
+          borderColor: "#3b82f6",
+          borderWidth: 1,
+          titleFont: {
+            family: "'Inter', sans-serif",
+            weight: "700"
+          },
+          bodyFont: {
+            family: "'Inter', sans-serif",
+            weight: "400"
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: "#6b7280", // text-gray-500
+            font: {
+              family: "'Inter', sans-serif"
+            }
+          },
+        },
+        y: {
+          beginAtZero: false,
+          ticks: {
+            color: "#6b7280",
+            callback: value => `${value}°`,
+            font: {
+              family: "'Inter', sans-serif"
+            }
+          },
+        }
+      }
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const bindings = [
+    { panel: "firstPeriod-panel", id: "first", variable: "temperature" },
+    { panel: "secondPeriod-panel", id: "second", variable: "temperature" },
+    { panel: "thirdPeriod-panel", id: "third", variable: "temperature" }
+  ];
+
+  bindings.forEach(({ panel, id, variable }) => {
+    const element = document.querySelector(`.${panel}`);
+    if (element) {
+      element.addEventListener("click", () => toggleChart(id, variable));
+    }
+  });
+});

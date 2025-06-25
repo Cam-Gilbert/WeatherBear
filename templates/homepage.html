@@ -54,16 +54,34 @@
        <p class="text-gray-500 italic">Loading current conditions...</p>
     </div>
 
-    <div class="firstPeriod-panel bg-white rounded-xl shadow-lg p-4">
-       <p class="text-gray-500 italic">Loading Forecast...</p>
+    <div class="firstPeriod-panel bg-white rounded-xl shadow-lg p-4 cursor-pointer transition-all hover:shadow-xl">
+      <div id="first-period-forecast" class = "mb-4">
+        <p class="text-gray-500 italic">Loading Forecast...</p>
+      </div>
+
+      <div id = "first-chart-container" class = "hidden mt-4">
+        <canvas id ="first-chart" class="w-full h-64"></canvas>
+      </div>
     </div>
 
-    <div class="secondPeriod-panel bg-white rounded-xl shadow-lg p-4">
-       <p class="text-gray-500 italic">Loading Forecast...</p>
+    <div class="secondPeriod-panel bg-white rounded-xl shadow-lg p-4 cursor-pointer transition-all hover:shadow-xl">
+      <div id="second-period-forecast" class = "mb-4">
+        <p class="text-gray-500 italic">Loading Forecast...</p>
+      </div>
+
+      <div id = "second-chart-container" class = "hidden mt-4">
+        <canvas id ="second-chart" class="w-full h-64"></canvas>
+      </div>
     </div>
 
-    <div class="thirdPeriod-panel bg-white rounded-xl shadow-lg p-4">
-       <p class="text-gray-500 italic">Loading Forecast...</p>
+    <div class="thirdPeriod-panel bg-white rounded-xl shadow-lg p-4 cursor-pointer transition-all hover:shadow-xl">
+      <div id="third-period-forecast" class = "mb-4">
+        <p class="text-gray-500 italic">Loading Forecast...</p>
+      </div>
+
+      <div id = "third-chart-container" class = "hidden mt-4">
+        <canvas id ="third-chart" class="w-full h-64"></canvas>
+      </div>
     </div>
   </div>
 </div>
@@ -73,7 +91,9 @@
   bg-red-600 bg-red-700 bg-red-800 bg-red-400
 </div>
 
-<script type="module" src="{{ url_for('static', filename='js/geolocation.js') }}"></script>
-<script type="module" src="{{ url_for('static', filename='js/summaryUpdate.js') }}"></script>
-<script type="module" src="{{ url_for('static', filename='js/forecastRender.js') }}"></script>
+<script type = "module" src = "{{ url_for('static', filename='js/geolocation.js') }}"></script>
+<script type = "module" src = "{{ url_for('static', filename='js/summaryUpdate.js') }}"></script>
+<script type = "module" src = "{{ url_for('static', filename='js/forecastRender.js') }}"></script>
+<script type = "module" src = "{{ url_for('static', filename='js/chart.js') }}"></script>
+
 {% endblock %}
