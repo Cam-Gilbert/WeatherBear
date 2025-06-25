@@ -16,6 +16,7 @@ class Emailer:
     def generate_email(self):
         email_string = f"Hello {self.User.name}, "
 
+        ## Get obs from self
         if self.User.preferences["units"] == "imperial":
             temp_unit = "F"
             # observation temperatures & dewpoints are in celcius - must convert to F

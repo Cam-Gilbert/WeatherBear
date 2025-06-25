@@ -8,7 +8,7 @@ from backend.data_fetcher import Data_Fetcher
 from backend.user import User, load_users, save_users, find_user_by_email
 from backend.summarizer import Summarizer
 from backend.main import main_loop
-
+from datetime import datetime
 
 load_dotenv()
 openai.api_key = os.getenv("API_KEY")
@@ -118,8 +118,8 @@ def get_forecast():
     elif location:
         loc = location
 
-    df = Data_Fetcher(loc)
-    forecast_discussion, organized_alerts, daily_forecasts, obs_data = df.get_forecast()
+    df = Data_Fetcher(loc, units)
+    forecast_discussion, organized_alerts, daily_forecasts, obs_data, hourly_forecast = df.get_forecast()
 
     if units == "imperial":
         temp_unit = "F"
@@ -137,13 +137,22 @@ def get_forecast():
         station = obs_data['properties']['stationName']
         clouds = obs_data['properties']['textDescription']
     else:
-            temp_unit = "C"
-            temperature = obs_data['properties']['temperature']['value']
-            dewpoint = obs_data['properties']['dewpoint']['value']
-            windChill = obs_data['properties']['windChill']['value']
-            heatIndex = obs_data['properties']['heatIndex']['value']
-            station = obs_data['properties']['stationName']
-            clouds = obs_data['properties']['textDescription']
+        temp_unit = "C"
+        temperature = obs_data['properties']['temperature']['value']
+        dewpoint = obs_data['properties']['dewpoint']['value']
+        windChill = obs_data['properties']['windChill']['value']
+        if windChill is not None:
+            windChill = round(windChill)
+        heatIndex = obs_data['properties']['heatIndex']['value']
+        if heatIndex is not None:
+            heatIndex = round(heatIndex)
+        station = obs_data['properties']['stationName']
+        clouds = obs_data['properties']['textDescription']
+
+    first_slice = make_hourly_split(hourly_forecast['properties']['periods'][0]['startTime'], daily_forecasts[0]['end_time'], hourly_forecast)
+    second_slice = make_hourly_split(daily_forecasts[0]['end_time'], daily_forecasts[1]['end_time'], hourly_forecast)
+    third_slice = make_hourly_split(daily_forecasts[1]['end_time'], daily_forecasts[2]['end_time'], hourly_forecast)
+    fourth_slice = make_hourly_split(daily_forecasts[2]['end_time'], daily_forecasts[3]['end_time'], hourly_forecast)
 
     if heatIndex is not None:
         text = f"It is currently {temperature} degrees {temp_unit} with a dewpoint of {dewpoint} {temp_unit}, for a feels-like temperature of {heatIndex} {temp_unit} at {station} with {clouds.lower()} skies. "
@@ -174,7 +183,8 @@ def get_forecast():
             "is_daytime": daily_forecasts[0]['is_daytime'],
             "precip_chance": daily_forecasts[0]['precipitation_chance'],
             "text": daily_forecasts[0]['detailed_forecast'],
-            "icon": determine_icon(daily_forecasts[0]['icon'])
+            "icon": determine_icon(daily_forecasts[0]['icon']),
+            "hourly_forecast": first_slice
         }, 
         "second_period": {
             "title": daily_forecasts[1]['name'],
@@ -184,7 +194,8 @@ def get_forecast():
             "is_daytime": daily_forecasts[1]['is_daytime'],
             "precip_chance": daily_forecasts[1]['precipitation_chance'],
             "text": daily_forecasts[1]['detailed_forecast'],
-            "icon": determine_icon(daily_forecasts[1]['icon'])
+            "icon": determine_icon(daily_forecasts[1]['icon']),
+            "hourly_forecast": second_slice
         }, 
         "third_period": {
             "title": daily_forecasts[2]['name'],
@@ -194,7 +205,8 @@ def get_forecast():
             "is_daytime": daily_forecasts[2]['is_daytime'],
             "precip_chance": daily_forecasts[2]['precipitation_chance'],
             "text": daily_forecasts[2]['detailed_forecast'],
-            "icon": determine_icon(daily_forecasts[2]['icon'])
+            "icon": determine_icon(daily_forecasts[2]['icon']),
+            "hourly_forecast": third_slice
 
         }, 
         "fourth_period": {
@@ -205,7 +217,8 @@ def get_forecast():
             "is_daytime": daily_forecasts[3]['is_daytime'],
             "precip_chance": daily_forecasts[3]['precipitation_chance'],
             "text": daily_forecasts[3]['detailed_forecast'],
-            "icon": determine_icon(daily_forecasts[3]['icon'])
+            "icon": determine_icon(daily_forecasts[3]['icon']),
+            "hourly_forecast": fourth_slice
         }
     })
 
@@ -224,8 +237,8 @@ def get_summary():
     else:
         return jsonify({"error": "No location provided"}), 400
 
-    df = Data_Fetcher(loc)
-    forecast_discussion, organized_alerts, daily_forecasts, obs_data = df.get_forecast()
+    df = Data_Fetcher(loc, units)
+    forecast_discussion, organized_alerts, daily_forecasts, obs_data, hourly_forecast = df.get_forecast()
     if forecast_discussion is not None:
         summarizer = Summarizer(expertise, forecast_discussion)
     else:
@@ -279,6 +292,24 @@ def determine_icon(link):
         icon = "static/assets/day_clear.png"
 
     return icon
+
+
+def make_hourly_split(start_time, end_time, hourly_forecast):
+    '''
+    start_time = hourly_forecast['properties']['periods'][0]['startTime']
+    end_time = daily_forecasts[0]['end_time']
+    '''
+    start_dt = datetime.fromisoformat(start_time)
+    end_dt = datetime.fromisoformat(end_time)
+
+    periods = hourly_forecast['properties']['periods']
+    sliced = [
+        p for p in periods
+        if start_dt <= datetime.fromisoformat(p['endTime']) <= end_dt
+    ]
+
+    return sliced
+
 
 # start scheduler when Flask starts
 scheduler = BackgroundScheduler()

@@ -2,6 +2,7 @@ from backend.data_fetcher import Data_Fetcher
 from backend.summarizer import Summarizer
 from backend.emailer import Emailer
 from backend.user import User
+from datetime import datetime
 
 def test_get_latlon():
     df = Data_Fetcher("Pinehurst")
@@ -30,13 +31,13 @@ def test_get_forecast_office():
 #data = test_get_forecast_office()
 
 def test_get_forecast():
-    df = Data_Fetcher("Waterloo")
-    forecast_discussion, organized_alerts, daily_forecasts, obs_data = df.get_forecast()
+    df = Data_Fetcher("Raleigh", "imperial")
+    forecast_discussion, organized_alerts, daily_forecasts, obs_data, hourly_forecast = df.get_forecast()
 
-    return forecast_discussion, organized_alerts, daily_forecasts, obs_data
+    return forecast_discussion, organized_alerts, daily_forecasts, obs_data, hourly_forecast
 
 
-forecast_discussion, organized_alerts, daily_forecasts, obs_data = test_get_forecast()
+forecast_discussion, organized_alerts, daily_forecasts, obs_data, hourly_forecast = test_get_forecast()
 
 def test_summarizer():
     df = Data_Fetcher("San Antonio")
@@ -60,8 +61,9 @@ def test_emailer():
     email = emailer.generate_email()
     emailer.send_email()
 
-    return email, user, forecast_discussion, obs_data
+    return email, user, forecast_discussion, obs_data,
 
-email, user, forecast_discussion, obs_data = test_emailer()
+#email, user, forecast_discussion, obs_data = test_emailer()
 
 #print(email)
+
