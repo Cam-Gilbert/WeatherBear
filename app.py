@@ -3,6 +3,7 @@ import openai
 import os
 from dotenv import load_dotenv
 from apscheduler.schedulers.background import BackgroundScheduler
+import atexit
 from backend.data_fetcher import Data_Fetcher
 from backend.user import User, load_users, save_users, find_user_by_email
 from backend.summarizer import Summarizer
@@ -335,11 +336,11 @@ def explain_selected_text():
 
 
 # start scheduler when Flask starts
-#scheduler = BackgroundScheduler()
-#scheduler.add_job(func=main_loop, trigger="interval", seconds=120)
-#scheduler.start()
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=main_loop, trigger="interval", seconds=120)
+scheduler.start()
 
-#atexit.register(lambda: scheduler.shutdown())
+atexit.register(lambda: scheduler.shutdown())
 
 
 if __name__ == "__main__":
