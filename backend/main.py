@@ -27,7 +27,7 @@ def send_email_to_user(user):
         print("Gathering Data")
         # Collect Data
         df = Data_Fetcher(user.location, user.units)
-        forecast_discussion, organized_alerts, daily_forecasts, obs_data = df.get_forecast()
+        forecast_discussion, organized_alerts, daily_forecasts, obs_data, hourly_forecast = df.get_forecast()
         # Summarize response
         summarizer = Summarizer(user.preferences["weather_knowledge"], forecast_discussion)
         print("Generating Summary")
