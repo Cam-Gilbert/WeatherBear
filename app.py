@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, get_flashed_messages
+from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, get_flashed_messages, session
 import openai
 import os
 from dotenv import load_dotenv
@@ -238,9 +238,10 @@ def get_summary():
         return jsonify({"error": "No location provided"}), 400
 
     df = Data_Fetcher(loc, units)
-    forecast_discussion, organized_alerts, daily_forecasts, obs_data, hourly_forecast = df.get_forecast()
+    forecast_discussion, *_ = df.get_forecast()
     if forecast_discussion is not None:
         summarizer = Summarizer(expertise, forecast_discussion)
+        summarizer_object = summarizer
     else:
         return jsonify({"error": "Missing afd"}), 400
 
@@ -248,7 +249,9 @@ def get_summary():
     summary += summarizer.generate_Message()
 
     return jsonify({
-        "summary": summary
+        "summary": summary,
+        "afd": forecast_discussion,
+        "expertise": expertise
     })
 
 
@@ -309,6 +312,27 @@ def make_hourly_split(start_time, end_time, hourly_forecast):
     ]
 
     return sliced
+
+
+@app.route("/explain-text", methods=["POST"])
+def explain_selected_text():
+    data = request.get_json()
+    selected_text = data.get("text", "").strip()
+    summary = data.get("summary", "")
+    forecast = data.get("afd", "")
+    expertise = data.get("expertise", "")
+
+    if not selected_text or not summary or not forecast or not expertise:
+        return jsonify({"explanation": "Missing required fields"}), 400
+
+    if not summary or not forecast or not expertise:
+        return jsonify({"explanation": "Session expired or incomplete"}), 400
+
+    # need to implement explain_text 
+    summarizer = Summarizer(expertise, forecast)
+    explanation = summarizer.explain_text(selected_text, summary)  # your OpenAI or AI logic
+    return jsonify({"explanation": explanation})
+    #return jsonify({"explanation": "test -- works"})
 
 
 # start scheduler when Flask starts
