@@ -1,7 +1,9 @@
+/** Import the fetchAndRenderForecast method from forecastRender. Used to fetch the current forecast and render the forecase panels */
 import { fetchAndRenderForecast } from "./forecastRender.js";
 
 /** 
- * Code to get users locations from browser
+ * Code to attempt to get users locations from browser. If it is allowed the site will not wait for form submission and grab forecast data
+ * using the location provided. 
  */ 
 window.addEventListener("DOMContentLoaded", () => {
   const statusText = document.getElementById("geo-status");
@@ -14,26 +16,26 @@ window.addEventListener("DOMContentLoaded", () => {
       async (position) => {
         const { latitude, longitude } = position.coords;
 
-        // Fill hidden inputs
+        // hidden inputs
         latitudeInput.value = latitude;
         longitudeInput.value = longitude;
 
-        // Remove required attribute from manual input (since it's now optional)
+        //remove required attribute from manual input (since it's now optional)
         locationInput.removeAttribute("required");
 
         let city = ""
 
-        // (Optional) Try to reverse geocode to fill in the city name
+        // See if we can grab the city name if possible for most simple nws api interactions
         try {
           const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
           const data = await response.json();
           const city = data.address.city || data.address.town || data.address.village || data.address.state || '';
           locationInput.value = city;
         } catch (error) {
-          console.warn("Reverse geocoding failed:", error.message);
+          console.warn("city finding failed:", error.message);
         }
 
-        // Update status
+        // update page
         statusText.textContent = "Location auto-detected! You may edit it if needed.";
 
         const data = {
@@ -42,15 +44,15 @@ window.addEventListener("DOMContentLoaded", () => {
           longitude: longitude,
           units: "imperial"
         }
-
+        // fetch forecast data and render the forecast panels on the webpage now that we have the users location
         fetchAndRenderForecast(data)
       },
       (error) => {
-        statusText.textContent = "Unable to auto-detect location. Please enter manually.";
+        statusText.textContent = "Unable to detect location. Please enter manually.";
         console.warn("Geolocation error:", error.message);
       }
     );
   } else {
-    statusText.textContent = "Geolocation not supported. Please enter location manually.";
+    statusText.textContent = "Not able to get geolocation. Please enter location manually.";
   }
 });

@@ -17,7 +17,8 @@ class Data_Fetcher:
         '''
         Data_Fetcher object initialization method (constructor)
 
-        @param location users zipcode, city, address, etc...
+        @param location users zipcode, city, address, etc... 
+        @param units used to specify units when pulling from nws
         '''
         self.location = location
         self.units = units 
@@ -25,16 +26,16 @@ class Data_Fetcher:
     def get_forecast(self):
         '''
         Main function of this class. This function will use the NWS API to grab the following products
-        Text Forecast Discussion for the region - check
-        Forecasted High and Low Temperatures - check 
-        Forecasted Feels-Like Temperatures - check
-        Any Watches/Warnings in the area for the specific time - check
-        Current obs at closest observation station - check
+        Text Forecast Discussion for the region
+        Active Alerts (Warnings and Watches)
+        Observations from the closest station to the users location
+        Hourly forecast dictionary including several variables (temp, dewpt, relative humidity, cloud level, etc...)
 
         @return forecast_discussion string containing the most recent forecast discussion
-        @return organized_alerts string containing any warnings in the area
-        @return daily_forecasts the daily forecast information
-        @return obs_data the most recent observation info from the closest station
+        @return organized_alerts list of dictionarys (1 dict for every alert) containing info on active alerts in the area
+        @return daily_forecasts list of dictionarys (1 dict for every forecast period) containing the basic daily forecast information 
+        @return obs_data dictionary containing information on the observations from the closest station. 
+        @return hourly_forecast dictionary containing a list of periods with hourly forecast data (temp, dewpt, relative humidty, etc..)
         '''
         # Get inital data
         coords = self.get_latlon()
@@ -62,6 +63,7 @@ class Data_Fetcher:
             prop = alert['properties']
             params = prop.get('parameters', {})
 
+            # Grab most everything because not sure what we will need just yet
             organized_alert = {
                 'event': prop.get('event'),
                 'sender_name': prop.get('senderName'),
@@ -80,7 +82,7 @@ class Data_Fetcher:
                 'instruction': prop.get('instruction'),
                 'response': prop.get('response'),
                 'web': prop.get('web'),
-                'vtec': params.get('VTEC', [None])[0],  # VTEC hazard code
+                'vtec': params.get('VTEC', [None])[0], 
             }
 
             
@@ -88,12 +90,13 @@ class Data_Fetcher:
         # Only care about alerts affecting our zone irl
         organized_alerts = [a for a in organized_alerts if zone_id in alert['properties']['geocode']['UGC']]
 
-        # Get Weather Forecasts
+        # Get Forecasts
         url = f"{BASE_URL}/gridpoints/{forecast_office}/{gridX},{gridY}/forecast"
         url = self.check_units(url)        
         forecast_data = self.make_request(url, USER_AGENT)
         daily_forecasts = []
 
+        # Extract info
         for period in forecast_data['properties']['periods']:
             forecast = {
                 'name': period['name'],
@@ -124,16 +127,16 @@ class Data_Fetcher:
         return forecast_discussion, organized_alerts, daily_forecasts, obs_data, hourly_forecast
         
 
-
     def get_latlon(self):
         '''
         Use the open street map api to get a users lat/lon based on an inputted city/zipcode
 
-        @return the station lat lon in an array data[0] = 'lat' data[1] = 'lon'
+        @return the station lat lon in a tuple --> data[0] = 'lat' data[1] = 'lon'
         '''
-
         url = f"https://nominatim.openstreetmap.org/search?q={self.location}&format=json&limit=1"
+
         try:
+            # send a request to api
             response = requests.get(url, headers={"User-Agent": "WeatherBearApp/1.0"})
             response.raise_for_status
             data = response.json()
@@ -156,11 +159,12 @@ class Data_Fetcher:
         @return gridX stations x grid point
         @return gridY stations y grid point
         @return zone_url the warning zone
-        @return closest_station the closest obs station
+        @return closest_station the closest observation station
         '''
         url = f"{BASE_URL}/points/{lat},{lon}"
         data = self.make_request(url, USER_AGENT)
        
+        # pull important station information
         if data:
             office = data['properties']['forecastOffice']
             gridX = data['properties']['gridX']
@@ -189,7 +193,7 @@ class Data_Fetcher:
         Helper function that makes api requests to NWS API
 
         @param endpoint the url of api at desired point
-        @param user_agent a username that is used when calling api
+        @param user_agent a username that is used when calling api, private stored in .env
         '''
         headers = {"User-Agent": user_agent}
         try:
@@ -226,10 +230,13 @@ class Data_Fetcher:
         return c * r
     
     def check_units(self, url):
-        ''' Checks units preference and pulls si units if necessary.'''
+        ''' 
+        Checks units preference and pulls si units if necessary.
+        
+        @param the url of the api request link
+        '''
         if self.units == "metric":
+            # string added onto api link that modifys what units the data is pulled in
             url += "?units=si"
 
         return url
-    
-            

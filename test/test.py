@@ -5,14 +5,15 @@ from backend.user import User
 from datetime import datetime
 
 def test_get_latlon():
-    df = Data_Fetcher("Pinehurst")
+    df = Data_Fetcher("Pinehurst", "metric")
     coords = df.get_latlon()
     if coords:
         print(f"Latitude: {coords[0]}, Longitude: {coords[1]}")
     else:
         print("Failed to get coordinates.")
+    return coords
 
-#test_get_latlon()
+x = test_get_latlon()
 
 def test_get_forecast_office():
     df = Data_Fetcher("Los Angeles")
