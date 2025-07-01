@@ -174,6 +174,8 @@ def get_forecast():
     second_slice = make_hourly_split(daily_forecasts[0]['end_time'], daily_forecasts[1]['end_time'], hourly_forecast)
     third_slice = make_hourly_split(daily_forecasts[1]['end_time'], daily_forecasts[2]['end_time'], hourly_forecast)
     fourth_slice = make_hourly_split(daily_forecasts[2]['end_time'], daily_forecasts[3]['end_time'], hourly_forecast)
+    fifth_slice = make_hourly_split(daily_forecasts[3]['end_time'], daily_forecasts[4]['end_time'], hourly_forecast)
+    sixth_slice = make_hourly_split(daily_forecasts[4]['end_time'], daily_forecasts[5]['end_time'], hourly_forecast)
 
     if heatIndex is not None:
         text = f"It is currently {temperature} degrees {temp_unit} with a dewpoint of {dewpoint} {temp_unit}, for a feels-like temperature of {heatIndex} {temp_unit} at {station} with {clouds.lower()} skies. "
@@ -240,6 +242,28 @@ def get_forecast():
             "text": daily_forecasts[3]['detailed_forecast'],
             "icon": determine_icon(daily_forecasts[3]['icon']),
             "hourly_forecast": fourth_slice
+        },
+        "fifth_period": {
+            "title": daily_forecasts[4]['name'],
+            "temperature": daily_forecasts[4]['temperature'],
+            "wind_dir": daily_forecasts[4]['wind_direction'],
+            "wind_speed": daily_forecasts[4]['wind_speed'],
+            "is_daytime": daily_forecasts[4]['is_daytime'],
+            "precip_chance": daily_forecasts[4]['precipitation_chance'],
+            "text": daily_forecasts[4]['detailed_forecast'],
+            "icon": determine_icon(daily_forecasts[4]['icon']),
+            "hourly_forecast": fifth_slice
+        },
+        "sixth_period": {
+            "title": daily_forecasts[5]['name'],
+            "temperature": daily_forecasts[5]['temperature'],
+            "wind_dir": daily_forecasts[5]['wind_direction'],
+            "wind_speed": daily_forecasts[5]['wind_speed'],
+            "is_daytime": daily_forecasts[5]['is_daytime'],
+            "precip_chance": daily_forecasts[5]['precipitation_chance'],
+            "text": daily_forecasts[5]['detailed_forecast'],
+            "icon": determine_icon(daily_forecasts[5]['icon']),
+            "hourly_forecast": sixth_slice
         }
     })
 

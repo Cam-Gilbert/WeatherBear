@@ -3,6 +3,9 @@ const hourlyData = {
   first: [],
   second: [],
   third: [],
+  fourth: [],
+  fifth: [],
+  sixth: [],
   units: []
 };
 
@@ -21,7 +24,7 @@ export function fetchAndRenderForecast(payload) {
       }
 
       const unit = payload.units === "metric" ? "C" : "F";
-
+      console.log(data.fifth_period);      
       // Clear old alerts
       const alertsContainer = document.getElementById("alerts_container");
       alertsContainer.innerHTML = "";
@@ -85,6 +88,10 @@ export function fetchAndRenderForecast(payload) {
       document.querySelector(".firstPeriod-panel").innerHTML = formatPeriod(data.first_period);
       document.querySelector(".secondPeriod-panel").innerHTML = formatPeriod(data.second_period);
       document.querySelector(".thirdPeriod-panel").innerHTML = formatPeriod(data.third_period);
+      document.querySelector(".fourthPeriod-panel").innerHTML = formatPeriod(data.fourth_period);
+      document.querySelector(".fifthPeriod-panel").innerHTML = formatPeriod(data.fifth_period);
+      document.querySelector(".sixthPeriod-panel").innerHTML = formatPeriod(data.sixth_period);
+
 
       // Re-add the chart containers after wiping them out
       document.querySelector(".firstPeriod-panel").insertAdjacentHTML("beforeend", `
@@ -125,11 +132,52 @@ export function fetchAndRenderForecast(payload) {
           </div>
         </div>
       `);
+      
+      document.querySelector(".fourthPeriod-panel").insertAdjacentHTML("beforeend", `
+        <div id="fourth-chart-container" class="hidden mt-4">
+          <div class="flex flex-wrap gap-4">
+            <div class="w-full md:w-1/2">
+              <canvas id="fourth-chart" class="w-full h-48"></canvas>
+            </div>
+            <div class="w-full md:w-1/2">
+              <canvas id="fourth-chart-a" class="w-full h-48"></canvas>
+            </div>
+          </div>
+        </div>
+      `);
 
+      document.querySelector(".fifthPeriod-panel").insertAdjacentHTML("beforeend", `
+        <div id="fifth-chart-container" class="hidden mt-4">
+          <div class="flex flex-wrap gap-4">
+            <div class="w-full md:w-1/2">
+              <canvas id="fifth-chart" class="w-full h-48"></canvas>
+            </div>
+            <div class="w-full md:w-1/2">
+              <canvas id="fifth-chart-a" class="w-full h-48"></canvas>
+            </div>
+          </div>
+        </div>
+      `);
+
+      document.querySelector(".sixthPeriod-panel").insertAdjacentHTML("beforeend", `
+        <div id="sixth-chart-container" class="hidden mt-4">
+          <div class="flex flex-wrap gap-4">
+            <div class="w-full md:w-1/2">
+              <canvas id="sixth-chart" class="w-full h-48"></canvas>
+            </div>
+            <div class="w-full md:w-1/2">
+              <canvas id="sixth-chart-a" class="w-full h-48"></canvas>
+            </div>
+          </div>
+        </div>
+      `);
       // save hourly data to global list so chart function can see it
       hourlyData.first = data.first_period.hourly_forecast;
       hourlyData.second = data.second_period.hourly_forecast;
       hourlyData.third = data.third_period.hourly_forecast;
+      hourlyData.fourth = data.fourth_period.hourly_forecast;
+      hourlyData.fifth = data.fifth_period.hourly_forecast;
+      hourlyData.sixth = data.sixth_period.hourly_forecast;
       hourlyData.units = payload.units;
     })
     .catch(err => console.error("Fetch Error:", err));
@@ -179,7 +227,7 @@ export function toggleChart(id, ...initialVariables) {
     temperature: "#c10007",
     probabilityOfPrecipitation: "#155dfc",
     relativeHumidity: "#008236",
-    windSpeed: "#9f2d00",
+    windSpeed: "#ff7300",
     dewpoint: "#004f3b"
   };
 
@@ -360,7 +408,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const bindings = [
     { panel: "firstPeriod-panel", id: "first", variable: ["temperature", "probabilityOfPrecipitation"] },
     { panel: "secondPeriod-panel", id: "second", variable: ["temperature", "probabilityOfPrecipitation"] },
-    { panel: "thirdPeriod-panel", id: "third", variable: ["temperature", "probabilityOfPrecipitation"] }
+    { panel: "thirdPeriod-panel", id: "third", variable: ["temperature", "probabilityOfPrecipitation"] },
+    { panel: "fourthPeriod-panel", id: "fourth", variable: ["temperature", "probabilityOfPrecipitation"] },
+    { panel: "fifthPeriod-panel", id: "fifth", variable: ["temperature", "probabilityOfPrecipitation"] },
+    { panel: "sixthPeriod-panel", id: "sixth", variable: ["temperature", "probabilityOfPrecipitation"] }
   ];
 
   bindings.forEach(({ panel, id, variable }) => {
