@@ -13,7 +13,7 @@ def test_get_latlon():
         print("Failed to get coordinates.")
     return coords
 
-x = test_get_latlon()
+#x = test_get_latlon()
 
 def test_get_forecast_office():
     df = Data_Fetcher("Los Angeles")
