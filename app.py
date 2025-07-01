@@ -39,37 +39,59 @@ def proxy_openai():
 # ✅ New routes to serve your HTML pages:
 @app.route("/")
 def homepage():
-    ''' Routing for the homepage html page '''
+    ''' 
+    Routing for the homepage html page 
+
+    @return rendered homepage.html template
+    '''
     return render_template("homepage.html")
 
 @app.route("/emailbot")
 def emailbot():
-    ''' Routing for the emailbot html page '''
+    ''' 
+    Routing for the emailbot html page 
+
+    @return rendered emailbot.html template
+    '''
+    # get success/failure messages - prob a better way to do this - maybe revist?
     messages = get_flashed_messages(with_categories=True)
     return render_template("emailbot.html", flash_messages=messages)
 
 @app.route("/about")
 def about():
-    ''' Routing for the about html page '''
+    ''' 
+    Routing for the about html page 
+
+    @return rendered about.html page
+    '''
     return render_template("about.html")
 
 @app.route("/set_location", methods=["POST"])
 def set_location():
-    ''' Routing for the get location function'''
+    ''' 
+    Routing for the get location function
+
+    @return success if successful, otherwise error code 200 is returned
+    '''
     data = request.get_json()
     latitude = data.get("latitude")
     longitude = data.get("longitude")
     
     print(f"Received location: lat={latitude}, lon={longitude}")
 
-    # Optionally, you can store this in session, database, etc.
     return {"status": "success"}, 200
 
 @app.route("/submit-emailbot", methods=["POST"])
 def submit_emailbot():
-    ''' Routing for the emailbot form submission '''
+    ''' 
+    Routing for the emailbot form submission 
+
+    @return 
+    '''
     print("hit submission route")
     form = request.form
+
+    # create user objects
     user = User(
         name=form.get("name"),
         location=form.get("location"),
@@ -81,9 +103,8 @@ def submit_emailbot():
             "times_sent": []
         }
     )
-    print(user)
+
     users = load_users()
-    print(users)
     existing_user = find_user_by_email(user.email, users)
     if existing_user:
         users = [u for u in users if u.email != user.email]
