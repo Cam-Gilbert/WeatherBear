@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
-from backend.data_fetcher import Data_Fetcher
+from backend.data_fetcher import Data_Fetcher, LocationError, ForecastError
 from backend.user import User, load_users, save_users, find_user_by_email
 from backend.summarizer import Summarizer
 from backend.main import main_loop
@@ -175,8 +175,15 @@ def get_forecast():
         loc = location
 
     # Create data fetcher and pull data from backend
-    df = Data_Fetcher(loc, units)
-    forecast_discussion, organized_alerts, daily_forecasts, obs_data, hourly_forecast = df.get_forecast()
+    try:
+        df = Data_Fetcher(loc, units)
+        forecast_discussion, organized_alerts, daily_forecasts, obs_data, hourly_forecast = df.get_forecast()
+    except LocationError as le:
+        return jsonify({"error": str(le)}), 400
+    except ForecastError as fe:
+        return jsonify({"error": str(fe)}), 503
+    except Exception as e:
+        return jsonify({"error": f"Unexpected error: {e}"}), 500
 
     # do conversions on units because obs dont have an option to pull based on units, always come in metric
     if units == "imperial":
@@ -438,11 +445,11 @@ def explain_selected_text():
 
 
 # start scheduler when Flask starts
-scheduler = BackgroundScheduler()
-scheduler.add_job(func=main_loop, trigger="interval", seconds=120) # trigger every 120 seconds, could prob be less frequent.
-scheduler.start()
+# scheduler = BackgroundScheduler()
+# scheduler.add_job(func=main_loop, trigger="interval", seconds=120) # trigger every 120 seconds, could prob be less frequent.
+# scheduler.start()
 
-atexit.register(lambda: scheduler.shutdown())
+#atexit.register(lambda: scheduler.shutdown())
 
 
 if __name__ == "__main__":

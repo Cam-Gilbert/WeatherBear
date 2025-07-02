@@ -1,5 +1,22 @@
 import { fetchAndRenderForecast } from "./forecastRender.js";
 
+function showErrorMessage(msg) {
+  const errorBox = document.getElementById("error-box");
+  if (errorBox) {
+    errorBox.textContent = msg;
+    errorBox.style.display = "block";
+  }
+}
+
+function clearErrorMessage() {
+  const errorBox = document.getElementById("error-box");
+  if (errorBox) {
+    errorBox.textContent = "";
+    errorBox.style.display = "none";
+  }
+}
+
+
 let fullAfdText = "";
 let currentExpertiseLevel = "";
 
@@ -40,7 +57,19 @@ window.addEventListener("DOMContentLoaded", () => {
         longitude: locationInput.value && locationInput.value.trim() !== "" ? "" : lonInput?.value
     };
 
-    fetchAndRenderForecast(forecastData);
+    spinner.style.display = "block";
+    submitButton.disabled = true;
+    submitButton.textContent = "Loading...";
+
+    // wait for a success or failed return val from fetchAndRenderForecast
+    const forecastSuccess = await fetchAndRenderForecast(forecastData);
+    if (!forecastSuccess) {
+      // Don't try to get summary if forecast failed
+      spinner.style.display = "none";
+      submitButton.disabled = false;
+      submitButton.textContent = "Get Forecast";
+      return;
+    }
 
     const formData = new FormData(form);
 
@@ -55,6 +84,19 @@ window.addEventListener("DOMContentLoaded", () => {
         body: formData
       });
 
+      if (!response.ok) {
+        // Get error as text and attempt to parse
+        const errorText = await response.text();
+        try {
+          const errorJson = JSON.parse(errorText);
+          showErrorMessage(errorJson.error || "Something went wrong.");
+        } catch {
+          showErrorMessage("Unexpected response from server.");
+        }
+        return;
+      }
+
+      clearErrorMessage(); // Clear any prior error
       const data = await response.json();
 
       // Animate form shrinking and moving upward

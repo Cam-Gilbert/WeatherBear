@@ -9,9 +9,26 @@ const hourlyData = {
   units: []
 };
 
+function showErrorMessage(msg) {
+  const errorBox = document.getElementById("error-box");
+  if (errorBox) {
+    errorBox.textContent = msg;
+    errorBox.style.display = "block";
+  }
+}
+
+function clearErrorMessage() {
+  const errorBox = document.getElementById("error-box");
+  if (errorBox) {
+    errorBox.textContent = "";
+    errorBox.style.display = "none";
+  }
+}
+
+
 export function fetchAndRenderForecast(payload) {
   console.log("fetch initiated with data:", payload);
-  fetch("/get-forecast", {
+  return fetch("/get-forecast", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
@@ -20,8 +37,11 @@ export function fetchAndRenderForecast(payload) {
     .then(data => {
       if (data.error) {
         console.error("Forecast Error:", data.error);
-        return;
+        showErrorMessage(data.error); // pls show up on webpage
+        return false;
       }
+
+      clearErrorMessage();
 
       const unit = payload.units === "metric" ? "C" : "F";
       console.log(data.fifth_period);      
@@ -179,8 +199,14 @@ export function fetchAndRenderForecast(payload) {
       hourlyData.fifth = data.fifth_period.hourly_forecast;
       hourlyData.sixth = data.sixth_period.hourly_forecast;
       hourlyData.units = payload.units;
+
+      return true;
     })
-    .catch(err => console.error("Fetch Error:", err));
+    .catch(err => {
+      console.error("Fetch Error:", err);
+      showErrorMessage("Could not load forecast. Please check your connection or try a different location.");
+      return false;
+    });
 }
 
 /**

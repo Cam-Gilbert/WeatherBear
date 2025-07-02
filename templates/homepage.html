@@ -16,7 +16,7 @@
   <form id="location-form"class="transition-all duration-500 ease-in-out transform">
     <div id="manual-location" class="mb-4">
       <label class="block text-md font-medium mb-1" for="location">Your Location</label>
-      <input class="w-full border rounded px-3 py-2" type="text" name="location" id="location" placeholder="City or ZIP code" required>
+      <input class="w-full border rounded px-3 py-2" type="text" name="location" id="location" placeholder="City, ex: Raleigh, NC" required>
     </div>
     <div class="mb-4">
       <label class="block text-md font-medium mb-1" for="expertise">Weather Knowledge Level</label>
@@ -40,6 +40,8 @@
   </form>
   <p class="text-sm text-gray-500 mt-2" id="geo-status">Attempting to detect your location...</p>
   {% endif %}
+
+  <div id="error-box" style="display:none;" class="text-red-600 font-semibold mt-4 text-center"></div>
 
   <!-- This panel is always rendered, just hidden initially -->
   <div class="summary-panel mt-4 hidden">
@@ -96,6 +98,7 @@
 <div class="hidden">
   bg-red-600 bg-red-700 bg-red-800 bg-red-400
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script type = "module" src = "{{ url_for('static', filename='js/geolocation.js') }}"></script>
