@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, get_flashed_messages, session
+from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, get_flashed_messages
 import openai
 import os
 from dotenv import load_dotenv
@@ -36,7 +36,6 @@ def proxy_openai():
     except Exception as e:
         return jsonify({"Error": str(e)}), 500
     
-# ✅ New routes to serve your HTML pages:
 @app.route("/")
 def homepage():
     ''' 
@@ -86,7 +85,7 @@ def submit_emailbot():
     ''' 
     Routing for the emailbot form submission 
 
-    @return 
+    @return reload emailbot page a display success message
     '''
     print("hit submission route")
     form = request.form
@@ -104,6 +103,7 @@ def submit_emailbot():
         }
     )
 
+    # load in the users and check if they already exist, if they do just update
     users = load_users()
     existing_user = find_user_by_email(user.email, users)
     if existing_user:
@@ -112,22 +112,57 @@ def submit_emailbot():
     else:
         flash("You have successsfully signed up!", "signup")
     users.append(user)
-    print(users)
+    
+    # save the users
     save_users(users)
     return redirect(url_for("emailbot"))
 
 @app.route("/unsubscribe", methods=["POST"])
 def unsubscribe():
-    ''' Routing for removing from email list '''
+    ''' 
+    Handles removing from email list. email list is stored in users.json at /mnt/data/users.json
+
+    @return reload the emailbot page and show message successfully been unsubscribed
+    '''
     email = request.form.get("unsubscribe_email")
+    # delete user from list
     users = load_users()
     users = [u for u in users if u.email != email]
+    # save list
     save_users(users)
+    # show message
     flash("You have been unsubscribed.", "unsubscribe")
     return redirect(url_for("emailbot"))
 
 @app.route("/get-forecast", methods=["POST"])
 def get_forecast():
+    '''
+    Handles getting all forecast information for the forecast panels. Currently gathers enough for a current observations panel and 6 forecast panels
+
+    The current observations contains
+        - temperature
+        - dewpoint
+        - station - closest observation station
+        - clouds - current sky conditions, partly cloudy
+        - windChill
+        - heatIndex
+        - text - Description of current conditions, I wrote this sentence structure
+        - icon
+    The forecasts each contain
+        - title - periods name ex: "today", "tonight:
+        - temperature
+        - wind_dir - wind direction (string like NW)
+        - wind_speed
+        - is_daytime - true if it is daytime (used for icon choices. purly asthetic)
+        - precip_chance - % change of precip
+        - text - long forecast description
+        - icon
+        - hourly_forecast - list of hourly forecast data. Already trimmed to amount of hours in period. Contains temperature, dewpoint, relative humidity, 
+                            precipitation chance, wind speed, and direction
+
+    @return data listed above in json format
+    '''
+    # Gather data needed 
     data = request.get_json()
     location = data.get("location")
     lat = data.get("latitude")
@@ -139,9 +174,11 @@ def get_forecast():
     elif location:
         loc = location
 
+    # Create data fetcher and pull data from backend
     df = Data_Fetcher(loc, units)
     forecast_discussion, organized_alerts, daily_forecasts, obs_data, hourly_forecast = df.get_forecast()
 
+    # do conversions on units because obs dont have an option to pull based on units, always come in metric
     if units == "imperial":
         temp_unit = "F"
         # observation temperatures & dewpoints are in celcius - must convert to F
@@ -170,6 +207,7 @@ def get_forecast():
         station = obs_data['properties']['stationName']
         clouds = obs_data['properties']['textDescription']
 
+    # Build hourly splits based on forecast period start and end times
     first_slice = make_hourly_split(hourly_forecast['properties']['periods'][0]['startTime'], daily_forecasts[0]['end_time'], hourly_forecast)
     second_slice = make_hourly_split(daily_forecasts[0]['end_time'], daily_forecasts[1]['end_time'], hourly_forecast)
     third_slice = make_hourly_split(daily_forecasts[1]['end_time'], daily_forecasts[2]['end_time'], hourly_forecast)
@@ -177,6 +215,7 @@ def get_forecast():
     fifth_slice = make_hourly_split(daily_forecasts[3]['end_time'], daily_forecasts[4]['end_time'], hourly_forecast)
     sixth_slice = make_hourly_split(daily_forecasts[4]['end_time'], daily_forecasts[5]['end_time'], hourly_forecast)
 
+    # Build observation description sentence
     if heatIndex is not None:
         text = f"It is currently {temperature} degrees {temp_unit} with a dewpoint of {dewpoint} {temp_unit}, for a feels-like temperature of {heatIndex} {temp_unit} at {station} with {clouds.lower()} skies. "
     elif windChill is not None:
@@ -301,6 +340,14 @@ def get_summary():
 
 
 def determine_icon(link):
+    '''
+    Determines what icon to display based on the "icon" parameter in most of the nws forecast products
+    Icons are contained in static/assets/moon_clear.png
+
+    @param link the icon link provided in the nws api
+    @return the path to the icon dependent on the conditions. 
+    '''
+    # if for whatever reason we cant get an icon, just use day time
     if link is None:
         return "static/assets/day_clear.png"
 
@@ -344,8 +391,12 @@ def determine_icon(link):
 
 def make_hourly_split(start_time, end_time, hourly_forecast):
     '''
-    start_time = hourly_forecast['properties']['periods'][0]['startTime']
-    end_time = daily_forecasts[0]['end_time']
+    Splits hourly forecasts into different periods. Today, tonight, tomorrow, tomorrow night, etc... 
+    This is done by splitting between start and end times of forecast periods. 
+
+    @param the start time of the forecast period start_time = hourly_forecast['properties']['periods'][0]['startTime']
+    @param the end time of the forecast periodend_time = daily_forecasts[0]['end_time']
+    @param hourly_forecast the list of forecast periods that will be split
     '''
     start_dt = datetime.fromisoformat(start_time)
     end_dt = datetime.fromisoformat(end_time)
@@ -361,6 +412,12 @@ def make_hourly_split(start_time, end_time, hourly_forecast):
 
 @app.route("/explain-text", methods=["POST"])
 def explain_selected_text():
+    '''
+    Handles collecting data from input, including the selected peice of text, the summary & afd for context. Also uses expertise
+    for the level of expertise. This is passed into a summarizer object to generate the explanation.
+
+    @return text explanation - "explanation"
+    '''
     data = request.get_json()
     selected_text = data.get("text", "").strip()
     summary = data.get("summary", "")
@@ -373,16 +430,16 @@ def explain_selected_text():
     if not summary or not forecast or not expertise:
         return jsonify({"explanation": "Session expired or incomplete"}), 400
 
-    # need to implement explain_text 
+    # pass to summarizer objext to explain the text 
     summarizer = Summarizer(expertise, forecast)
-    explanation = summarizer.explain_text(selected_text, summary)  # your OpenAI or AI logic
+    explanation = summarizer.explain_text(selected_text, summary) 
     return jsonify({"explanation": explanation})
     #return jsonify({"explanation": "test -- works"})
 
 
 # start scheduler when Flask starts
 scheduler = BackgroundScheduler()
-scheduler.add_job(func=main_loop, trigger="interval", seconds=120)
+scheduler.add_job(func=main_loop, trigger="interval", seconds=120) # trigger every 120 seconds, could prob be less frequent.
 scheduler.start()
 
 atexit.register(lambda: scheduler.shutdown())
