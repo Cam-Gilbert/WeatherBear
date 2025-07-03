@@ -7,6 +7,7 @@ import os
 from requests.exceptions import HTTPError, Timeout, RequestException
 from zoneinfo import ZoneInfo
 from datetime import datetime, timezone
+from filelock import FileLock
 ''' 
 User Object for WeatherBear Project. Will contain information on users name, location, unit preferance, email address, 
 and a level of weather knowledge
@@ -22,6 +23,8 @@ _geolocator = Nominatim(user_agent="weatherbear")
 _tz_finder = TimezoneFinder()
 # USER_PATH path to users.json on server, this path does not exist on local machine or repo
 USER_PATH = "/mnt/data/users.json"
+# LOCK PATH for file locking to avoid race conditions
+LOCK_PATH = USER_PATH + ".lock"
 
 class User:
     '''
@@ -215,24 +218,27 @@ def load_users():
 
     @return a list of user objects pulled from the users.json file
     '''
-    # Used to set up a users.json file when first deploying app
-    if not os.path.exists(USER_PATH):
-        print("creating empty one")
-        with open(USER_PATH, "w") as f:
-            json.dump([], f)
+    lock = FileLock(LOCK_PATH)
+    with lock: 
+        # Used to set up a users.json file when first deploying app
+        if not os.path.exists(USER_PATH):
+            os.makedirs(os.path.dirname(USER_PATH), exist_ok=True)
+            print("creating empty one")
+            with open(USER_PATH, "w") as f:
+                json.dump([], f)
 
-    try:
-        with open(USER_PATH, "r") as f:
-            users_data = json.load(f)
-        return [User(
-            name=user_dict["name"],
-            location=user_dict["location"],
-            email=user_dict["email"],
-            preferences=user_dict.get("preferences", {}),
-            timeZone=user_dict.get("timeZone")
-        ) for user_dict in users_data]
-    except FileNotFoundError:
-        return []
+        try:
+            with open(USER_PATH, "r") as f:
+                users_data = json.load(f)
+            return [User(
+                name=user_dict["name"],
+                location=user_dict["location"],
+                email=user_dict["email"],
+                preferences=user_dict.get("preferences", {}),
+                timeZone=user_dict.get("timeZone")
+            ) for user_dict in users_data]
+        except FileNotFoundError:
+            return []
         
 def save_users(users):
     ''' 
@@ -241,8 +247,10 @@ def save_users(users):
     @param a list of users to save to the users.json file
     '''
     os.makedirs(os.path.dirname(USER_PATH), exist_ok=True)
-    with open(USER_PATH, "w") as f:
-        json.dump([u.to_dict() for u in users], f, indent=2)
+    lock = FileLock(LOCK_PATH)
+    with lock:
+        with open(USER_PATH, "w") as f:
+            json.dump([u.to_dict() for u in users], f, indent=2)
     
 def find_user_by_email(email, users):
         ''' 
