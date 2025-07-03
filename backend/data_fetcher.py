@@ -49,6 +49,7 @@ class Data_Fetcher:
             raise LocationError("Could not find location. Please try a different input.")
         
         try:
+            print(coords)
             forecast_office, gridX, gridY, zone_url, obs_station = self.get_forecast_office(coords[0], coords[1])
             if not forecast_office:
                 raise ForecastError("Could not get forecast office info from NWS.")
@@ -144,13 +145,29 @@ class Data_Fetcher:
 
         @return the station lat lon in a tuple --> data[0] = 'lat' data[1] = 'lon'
         '''
-        url = f"https://nominatim.openstreetmap.org/search?q={self.location}&format=json&limit=1"
+        url = f"https://nominatim.openstreetmap.org/search?q={self.location}&format=json&limit=1&countrycodes=us"
 
         try:
+            parts = self.location.split(",")
+            if len(parts) == 2:
+                lat_str = parts[0].strip()
+                lon_str = parts[1].strip()
+
+                try:
+                    lat = float(lat_str)
+                    lon = float(lon_str)
+
+                    # Sanity Check
+                    if -90 <= lat <= 90 and -180 <= lon <= 180:
+                        return lat, lon
+                except ValueError:
+                    pass  # Not a valid coordinate pair, fall through to geocoding
+
             # send a request to api
             response = requests.get(url, headers={"User-Agent": "WeatherBearApp/1.0"}, timeout = 10)
             response.raise_for_status()
             data = response.json()
+
             if data:
                 return float(data[0]['lat']), float(data[0]['lon'])
             else:

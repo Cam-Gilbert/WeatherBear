@@ -173,6 +173,8 @@ def get_forecast():
         loc = f"{lat},{lon}"
     elif location:
         loc = location
+    else:
+        return jsonify({"error": "No location provided"}), 400
 
     # Create data fetcher and pull data from backend
     try:
@@ -190,9 +192,15 @@ def get_forecast():
         temp_unit = "F"
         # observation temperatures & dewpoints are in celcius - must convert to F
         temperature = obs_data['properties']['temperature']['value']
-        temperature = round((temperature * (9/5)) + 32)
+        if temperature is not None:
+            temperature = round((temperature * (9/5)) + 32)
+        else:
+            temperature = "Error Getting Temperature Obs"
         dewpoint = obs_data['properties']['dewpoint']['value']
-        dewpoint = round((dewpoint * (9/5)) + 32)
+        if dewpoint is not None:
+            dewpoint = round((dewpoint * (9/5)) + 32)
+        else:
+            dewpoint = "Error Getting Dewpoint Obs"
         windChill = obs_data['properties']['windChill']['value']
         if windChill is not None:
             windChill = round((windChill * (9/5)) + 32)
@@ -204,7 +212,11 @@ def get_forecast():
     else:
         temp_unit = "C"
         temperature = obs_data['properties']['temperature']['value']
+        if temperature is None:
+            temperature = "Error Getting Temperature Obs"
         dewpoint = obs_data['properties']['dewpoint']['value']
+        if dewpoint is None:
+            dewpoint = "Error Getting Dewpoint Obs"
         windChill = obs_data['properties']['windChill']['value']
         if windChill is not None:
             windChill = round(windChill)
@@ -321,10 +333,10 @@ def get_summary():
     expertise = request.form.get("expertise")
     units = request.form.get("units")
 
-    if location:
-        loc = location  # Prefer user-entered location
-    elif lat and lon:
-        loc = f"{lat},{lon}"  # Fallback to detected coordinates
+    if lat and lon:
+        loc = f"{lat},{lon}"  # Prefer coords
+    elif location:
+        loc = location  # Fallback to location
     else:
         return jsonify({"error": "No location provided"}), 400
 
@@ -332,7 +344,6 @@ def get_summary():
     forecast_discussion, *_ = df.get_forecast()
     if forecast_discussion is not None:
         summarizer = Summarizer(expertise, forecast_discussion)
-        summarizer_object = summarizer
     else:
         return jsonify({"error": "Missing afd"}), 400
 

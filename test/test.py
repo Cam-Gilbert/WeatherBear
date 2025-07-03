@@ -38,18 +38,18 @@ def test_get_forecast():
     return forecast_discussion, organized_alerts, daily_forecasts, obs_data, hourly_forecast
 
 
-forecast_discussion, organized_alerts, daily_forecasts, obs_data, hourly_forecast = test_get_forecast()
+#forecast_discussion, organized_alerts, daily_forecasts, obs_data, hourly_forecast = test_get_forecast()
 
 def test_summarizer():
-    df = Data_Fetcher("San Antonio")
-    forecast_discussion, organized_alerts, daily_forecasts, obs_data = df.get_forecast()
+    df = Data_Fetcher("Albany", "imperial")
+    forecast_discussion, organized_alerts, daily_forecasts, obs_data, hourly = df.get_forecast()
 
     summarizer = Summarizer("moderate", forecast_discussion)
     summary = summarizer.generate_Message()
 
     return summary
 
-#summary = test_summarizer()
+summary = test_summarizer()
 #print(summary)
 
 def test_emailer():

@@ -44,17 +44,27 @@ window.addEventListener("DOMContentLoaded", () => {
     event.preventDefault();
 
     const now = Date.now();
-    if (now - lastSubmitTime < 30000) {
-      alert("Please wait at least 30 seconds before submitting again.");
+    if (now - lastSubmitTime < 15000) {
+      alert("Please wait at least 15 seconds before submitting again.");
       return;
     }
     lastSubmitTime = now;
 
+    if (locationInput.value && locationInput.value.trim() !== "") {
+      // User typed a location → clear lat/lon so they aren't accidentally submitted
+      latInput.value = "";
+      lonInput.value = "";
+    } else if (!latInput.value || !lonInput.value) {
+      // User didn’t type a location AND geolocation didn’t populate
+      showErrorMessage("No location provided");
+      return;
+    }
+
     const forecastData = {
-        location: locationInput.value,
-        units: unitsInput?.value || "imperial",
-        latitude: locationInput.value && locationInput.value.trim() !== "" ? "" : latInput?.value,
-        longitude: locationInput.value && locationInput.value.trim() !== "" ? "" : lonInput?.value
+      location: locationInput.value,
+      units: unitsInput?.value || "imperial",
+      latitude: latInput?.value,
+      longitude: lonInput?.value
     };
 
     spinner.style.display = "block";
@@ -71,8 +81,13 @@ window.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const formData = new FormData(form);
-
+    const formData = new FormData();
+    formData.append("location", forecastData.location);
+    formData.append("latitude", forecastData.latitude);
+    formData.append("longitude", forecastData.longitude);
+    formData.append("units", forecastData.units);
+    formData.append("expertise", document.getElementById("expertise").value);
+    
     // Show spinner and disable button
     spinner.style.display = "block";
     submitButton.disabled = true;
