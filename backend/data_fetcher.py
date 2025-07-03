@@ -7,6 +7,11 @@ BASE_URL = "https://api.weather.gov"
 USER_AGENT = "WeatherBearApp"
 ''' Username for interacting with NWS and openstreetmap API'''
 
+''' Location Exception that will bubble up if there is a location error '''
+class LocationError(Exception): pass
+''' Forecast exception that will bubble up if there is a error getting forecast information '''
+class ForecastError(Exception): pass
+
 class Data_Fetcher:
     '''
     Data_Fetcher Class. It handles all of the interactions with the NWS api and pulling data. Contains several
@@ -41,9 +46,16 @@ class Data_Fetcher:
         coords = self.get_latlon()
         if coords is None:
             print("Failed to get coords")
-            return
+            raise LocationError("Could not find location. Please try a different input.")
         
-        forecast_office, gridX, gridY, zone_url, obs_station = self.get_forecast_office(coords[0], coords[1])
+        try:
+            print(coords)
+            forecast_office, gridX, gridY, zone_url, obs_station = self.get_forecast_office(coords[0], coords[1])
+            if not forecast_office:
+                raise ForecastError("Could not get forecast office info from NWS.")
+        except Exception as e:
+            print(f"Detailed ForecastError: {e}")  # You can replace with logging
+            raise ForecastError("That location is likely outside the NWS coverage area or does not exist. Please try a different location in the U.S. May need to be more specific Ex: Raleigh, NC or Denver, CO")
 
         # Get Text Forecast Discussion - May consider trimming this string at the start, save tokens passing into LLM $$$
         text_url = f"{BASE_URL}/products/types/AFD/locations/{forecast_office}/latest"
@@ -133,17 +145,33 @@ class Data_Fetcher:
 
         @return the station lat lon in a tuple --> data[0] = 'lat' data[1] = 'lon'
         '''
-        url = f"https://nominatim.openstreetmap.org/search?q={self.location}&format=json&limit=1"
+        url = f"https://nominatim.openstreetmap.org/search?q={self.location}&format=json&limit=1&countrycodes=us"
 
         try:
+            parts = self.location.split(",")
+            if len(parts) == 2:
+                lat_str = parts[0].strip()
+                lon_str = parts[1].strip()
+
+                try:
+                    lat = float(lat_str)
+                    lon = float(lon_str)
+
+                    # Sanity Check
+                    if -90 <= lat <= 90 and -180 <= lon <= 180:
+                        return lat, lon
+                except ValueError:
+                    pass  # Not a valid coordinate pair, fall through to geocoding
+
             # send a request to api
-            response = requests.get(url, headers={"User-Agent": "WeatherBearApp/1.0"})
-            response.raise_for_status
+            response = requests.get(url, headers={"User-Agent": "WeatherBearApp/1.0"}, timeout = 10)
+            response.raise_for_status()
             data = response.json()
+
             if data:
                 return float(data[0]['lat']), float(data[0]['lon'])
             else:
-                raise ValueError("Could not find location - try a zip code or different town")
+                raise LocationError("Could not find that location. Try a different location or a more specific name like 'Raleigh, NC'.")
         except(HTTPError, Timeout, RequestException) as e:
             print(f"Error fetching lat/lon: {e}")
             return None
@@ -197,18 +225,18 @@ class Data_Fetcher:
         '''
         headers = {"User-Agent": user_agent}
         try:
-            response = requests.get(endpoint, headers=headers)
+            response = requests.get(endpoint, headers=headers, timeout=15)
             response.raise_for_status()
             return response.json()
-
         except HTTPError as http_err:
             print(f"HTTP error occurred: {http_err} - Status code: {response.status_code}")
+            raise ForecastError(f"NWS returned an error: {http_err}")
         except Timeout as timeout_err:
             print(f"Request timed out: {timeout_err}")
+            raise ForecastError("The request to NWS timed out.")
         except RequestException as req_err:
             print(f"Request error: {req_err}")
-        
-        return None
+            raise ForecastError(f"An error occurred while making the request: {req_err}")
     
     def haversine(self, lon1, lat1, lon2, lat2):
         '''

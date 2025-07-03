@@ -1,5 +1,22 @@
 import { fetchAndRenderForecast } from "./forecastRender.js";
 
+function showErrorMessage(msg) {
+  const errorBox = document.getElementById("error-box");
+  if (errorBox) {
+    errorBox.textContent = msg;
+    errorBox.style.display = "block";
+  }
+}
+
+function clearErrorMessage() {
+  const errorBox = document.getElementById("error-box");
+  if (errorBox) {
+    errorBox.textContent = "";
+    errorBox.style.display = "none";
+  }
+}
+
+
 let fullAfdText = "";
 let currentExpertiseLevel = "";
 
@@ -27,23 +44,50 @@ window.addEventListener("DOMContentLoaded", () => {
     event.preventDefault();
 
     const now = Date.now();
-    if (now - lastSubmitTime < 30000) {
-      alert("Please wait at least 30 seconds before submitting again.");
+    if (now - lastSubmitTime < 15000) {
+      alert("Please wait at least 15 seconds before submitting again.");
       return;
     }
     lastSubmitTime = now;
 
+    if (locationInput.value && locationInput.value.trim() !== "") {
+      // User typed a location → clear lat/lon so they aren't accidentally submitted
+      latInput.value = "";
+      lonInput.value = "";
+    } else if (!latInput.value || !lonInput.value) {
+      // User didn’t type a location AND geolocation didn’t populate
+      showErrorMessage("No location provided");
+      return;
+    }
+
     const forecastData = {
-        location: locationInput.value,
-        units: unitsInput?.value || "imperial",
-        latitude: locationInput.value && locationInput.value.trim() !== "" ? "" : latInput?.value,
-        longitude: locationInput.value && locationInput.value.trim() !== "" ? "" : lonInput?.value
+      location: locationInput.value,
+      units: unitsInput?.value || "imperial",
+      latitude: latInput?.value,
+      longitude: lonInput?.value
     };
 
-    fetchAndRenderForecast(forecastData);
+    spinner.style.display = "block";
+    submitButton.disabled = true;
+    submitButton.textContent = "Loading...";
 
-    const formData = new FormData(form);
+    // wait for a success or failed return val from fetchAndRenderForecast
+    const forecastSuccess = await fetchAndRenderForecast(forecastData);
+    if (!forecastSuccess) {
+      // Don't try to get summary if forecast failed
+      spinner.style.display = "none";
+      submitButton.disabled = false;
+      submitButton.textContent = "Get Forecast";
+      return;
+    }
 
+    const formData = new FormData();
+    formData.append("location", forecastData.location);
+    formData.append("latitude", forecastData.latitude);
+    formData.append("longitude", forecastData.longitude);
+    formData.append("units", forecastData.units);
+    formData.append("expertise", document.getElementById("expertise").value);
+    
     // Show spinner and disable button
     spinner.style.display = "block";
     submitButton.disabled = true;
@@ -55,6 +99,19 @@ window.addEventListener("DOMContentLoaded", () => {
         body: formData
       });
 
+      if (!response.ok) {
+        // Get error as text and attempt to parse
+        const errorText = await response.text();
+        try {
+          const errorJson = JSON.parse(errorText);
+          showErrorMessage(errorJson.error || "Something went wrong.");
+        } catch {
+          showErrorMessage("Unexpected response from server.");
+        }
+        return;
+      }
+
+      clearErrorMessage(); // Clear any prior error
       const data = await response.json();
 
       // Animate form shrinking and moving upward
