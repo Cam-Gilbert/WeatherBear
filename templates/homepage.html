@@ -22,7 +22,7 @@
       <label class="block text-md font-medium mb-1" for="expertise">Weather Knowledge Level</label>
       <select class="w-full border rounded px-3 py-2" name="expertise" id="expertise">
         <option value="none">Novice</option>
-        <option value="moderate">Intermediate</option>
+        <option value="moderate">Moderate</option>
         <option value="expert">Expert</option>
         <option value="no_summary">No Summary</option>
       </select>
@@ -46,6 +46,13 @@
   <!-- This panel is always rendered, just hidden initially -->
   <div class="summary-panel mt-4 hidden">
     <h2 class="text-xl font-semibold mb-4">Forecast Summary</h2>
+    <div class="flex items-start gap-3 mb-4">
+      <input type="checkbox" id="explain-toggle"
+        class="w-5 h-5 rounded accent-blue-600 mt-1">
+      <label for="explain-toggle" class="text-sm text-gray-800 leading-snug">
+        Enable explanation mode and select a portion of text for an in-depth explanation
+      </label>
+    </div>
     <p class="mb-4 text-lg text-gray-600 whitespace-pre-line" id="summary-text"></p>
   </div>
 </div>
