@@ -456,11 +456,11 @@ def explain_selected_text():
 
 
 # start scheduler when Flask starts
-#scheduler = BackgroundScheduler()
-#scheduler.add_job(func=main_loop, trigger="interval", seconds=120) # trigger every 120 seconds, could prob be less frequent.
-#scheduler.start()
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=main_loop, trigger="interval", seconds=120) # trigger every 120 seconds, could prob be less frequent.
+scheduler.start()
 
-#atexit.register(lambda: scheduler.shutdown())
+atexit.register(lambda: scheduler.shutdown())
 
 
 if __name__ == "__main__":
