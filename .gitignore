@@ -42,3 +42,6 @@ users.json
 
 # node modules for development
 node_modules/
+
+# data directory
+mnt/

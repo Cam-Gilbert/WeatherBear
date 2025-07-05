@@ -49,7 +49,7 @@ def test_summarizer():
 
     return summary
 
-summary = test_summarizer()
+#summary = test_summarizer()
 #print(summary)
 
 def test_emailer():
@@ -68,3 +68,10 @@ def test_emailer():
 
 #print(email)
 
+def test_get_forecast():
+    df = Data_Fetcher("Raleigh", "imperial")
+    tropical_data = df.get_tropical_data()
+
+    return tropical_data
+
+tropical_data = test_get_forecast()
