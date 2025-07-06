@@ -8,6 +8,7 @@ from backend.data_fetcher import Data_Fetcher, LocationError, ForecastError
 from backend.user import User, load_users, save_users, find_user_by_email
 from backend.summarizer import Summarizer
 from backend.main import main_loop
+from backend.tropics import main_tropics_loop
 from datetime import datetime
 
 load_dotenv()
@@ -64,6 +65,10 @@ def about():
     @return rendered about.html page
     '''
     return render_template("about.html")
+
+@app.route("/tropics")
+def tropics():
+    return render_template('tropics.html')
 
 @app.route("/set_location", methods=["POST"])
 def set_location():
@@ -457,11 +462,10 @@ def explain_selected_text():
 
 # start scheduler when Flask starts
 scheduler = BackgroundScheduler()
-scheduler.add_job(func=main_loop, trigger="interval", seconds=120) # trigger every 120 seconds, could prob be less frequent.
-scheduler.start()
+scheduler.add_job(func=main_loop, trigger="interval", seconds=120) # trigger email-loop every 120 seconds
+scheduler.add_job(func=main_tropics_loop, trigger="interval", seconds=21600) # trigger new tropics data every 6 hours seconds
 
 atexit.register(lambda: scheduler.shutdown())
-
 
 if __name__ == "__main__":
     app.run(debug=False, use_reloader=False)

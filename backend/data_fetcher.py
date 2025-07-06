@@ -329,22 +329,17 @@ class Data_Fetcher:
                 }
 
                 tropical_data.setdefault(region_name, {})
-                tropical_data[region_name]['twd_discussions'] = [twd_discussion]
+                tropical_data[region_name]['twd_discussion'] = twd_discussion
 
             except Exception as e:
                 print(f"Error fetching TWD for {region_name}: {e}")
                 tropical_data.setdefault(region_name, {})
-                tropical_data[region_name]['twd_discussions'] = []
+                tropical_data[region_name]['twd_discussion'] = None
 
-
+        # Add path to where the shape files for the storm should be located once downloaded.
         #  download shape files for each storm and add their path to the dictionary in the correct location
         base_dir = os.path.dirname(os.path.abspath(__file__))  # current script directory
         storms_folder = os.path.abspath(os.path.join(base_dir, "..", "mnt", "storms"))
-
-        # delete all old files and folders in storms folder
-        if os.path.exists(storms_folder):
-            shutil.rmtree(storms_folder)
-        os.makedirs(storms_folder, exist_ok=True)
 
         for storm in storm_codes:
             code = storm.get("code")
@@ -354,7 +349,37 @@ class Data_Fetcher:
             if not code:
                 continue  # skip storms without code
 
-            # Sanitize storm name to be a valid folder name
+            storm_folder_path = os.path.join(storms_folder, code)
+
+            tropical_data.setdefault(region, {})
+            tropical_data[region].setdefault(name, {})
+            tropical_data[region][name]["shapefile_path"] = storm_folder_path
+
+        return tropical_data, storm_codes
+
+    def download_shape_files(self, storm_codes):
+        '''
+        Downloads shape files from https://www.nhc.noaa.gov/gis/
+
+        This method should be ran every 6 hours or so to download the shape files to backend. No need to redownload it everytime a user requests so just download
+        all storms every 6 hours
+        '''
+        base_dir = os.path.dirname(os.path.abspath(__file__))  
+        storms_folder = os.path.abspath(os.path.join(base_dir, "..", "mnt", "storms"))
+
+        # delete all old files and folders in storms folder
+        if os.path.exists(storms_folder):
+            shutil.rmtree(storms_folder)
+        os.makedirs(storms_folder, exist_ok=True)
+        
+        for storm in storm_codes:
+            code = storm.get("code")
+            name = storm.get("name")
+            region = storm.get("region")
+
+            if not code:
+                continue  # skip storms without code
+
             storm_folder_path = os.path.join(storms_folder, code)
             os.makedirs(storm_folder_path, exist_ok=True)
 
@@ -378,15 +403,11 @@ class Data_Fetcher:
                 # Optionally, delete the zip after extraction if you want to save space
                 os.remove(local_zip_path)
 
-                # Update tropical_data with the folder path of the extracted shapefile
-                tropical_data.setdefault(region, {})
-                tropical_data[region].setdefault(name, {})
-                tropical_data[region][name]["shapefile_path"] = storm_folder_path
-
             except Exception as e:
                 print(f"Failed to download or extract shapefile for {name} ({code}): {e}")
 
-        return tropical_data
+
+
 
     def get_forecast_office(self, lat, lon):
         '''

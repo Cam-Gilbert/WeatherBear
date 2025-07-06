@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="w-full mx-auto mt-10 px-12">
+
+  <!-- Region toggle buttons centered above both panels -->
+  <div class="mb-6 flex justify-center">
+    <div
+        id="region-tabs"
+        class="inline-flex rounded-md shadow-sm space-x-4"
+        role="tablist"
+        aria-label="Select region"
+    >
+        <!-- Atlantic -->
+        <button
+        id="btn-atlantic"
+        role="tab"
+        aria-selected="true"
+        type="button"
+        class="summary-level-btn
+                px-6 py-3           /* base padding */
+                sm:px-8 sm:py-4     /* larger on sm+ */
+                text-base sm:text-lg
+                font-bold
+                rounded
+                bg-blue-500 text-white hover:bg-blue-600
+                focus:outline-none focus:ring-2 focus:ring-blue-400"
+        aria-pressed="true"
+        >
+        Atlantic
+        </button>
+
+        <!-- Eastern Pacific -->
+        <button
+        id="btn-eastern"
+        role="tab"
+        aria-selected="false"
+        type="button"
+        class="summary-level-btn
+                px-6 py-3 sm:px-8 sm:py-4
+                text-base sm:text-lg
+                font-bold
+                rounded
+                bg-gray-800 text-white hover:bg-gray-600
+                focus:outline-none focus:ring-2 focus:ring-gray-500"
+        aria-pressed="false"
+        >
+        Eastern Pacific
+        </button>
+
+        <!-- Central Pacific -->
+        <button
+        id="btn-central"
+        role="tab"
+        aria-selected="false"
+        type="button"
+        class="summary-level-btn
+                px-6 py-3 sm:px-8 sm:py-4
+                text-base sm:text-lg
+                font-bold
+                rounded
+                bg-gray-800 text-white hover:bg-gray-600
+                focus:outline-none focus:ring-2 focus:ring-gray-500"
+        aria-pressed="false"
+        >
+        Central Pacific
+        </button>
+    </div>
+  </div>
+
+  <!-- Two-column grid below the buttons -->
+  <div class="grid grid-cols-1 md:grid-cols-24 gap-8">
+
+    <!-- Left Panel: Summary for each region -->
+    <div class="md:col-span-9">
+
+      <!-- Atlantic summary -->
+      <div id="summary-atlantic" class="bg-white rounded-xl shadow-lg p-4">
+        <h2 class="text-3xl font-bold text-gray-800 mb-3">Atlantic Summary</h2>
+
+        <!-- Summary level buttons WITHOUT label, centered and spaced -->
+        <div class="mb-6 flex justify-center">
+          <div class="inline-flex rounded-md shadow-sm space-x-4" role="group" aria-label="Summary level" id="expertise-tabs-atlantic">
+            <button type="button" class="summary-level-btn px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-blue-500 text-white hover:bg-blue-600" aria-pressed="true">No Summary</button>
+            <button type="button" class="summary-level-btn px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Novice</button>
+            <button type="button" class="summary-level-btn px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Moderate</button>
+            <button type="button" class="summary-level-btn px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Expert</button>
+          </div>
+        </div>
+
+        <p>Summary content for Atlantic region...</p>
+      </div>
+
+      <!-- Central Pacific summary (hidden initially) -->
+      <div id="summary-central" class="bg-white rounded-xl shadow-lg p-4 hidden">
+        <h2 class="text-3xl font-bold text-gray-800 mb-3">Central Pacific Summary</h2>
+
+        <div class="mb-6 flex justify-center">
+          <div class="inline-flex rounded-md shadow-sm space-x-4" role="group" aria-label="Summary level" id="expertise-tabs-central">
+            <button type="button" class="summary-level-btn px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-blue-500 text-white hover:bg-blue-600" aria-pressed="true">No Summary</button>
+            <button type="button" class="summary-level-btn px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Novice</button>
+            <button type="button" class="summary-level-btn px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Moderate</button>
+            <button type="button" class="summary-level-btn px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Expert</button>
+          </div>
+        </div>
+
+        <p>Summary content for Central Pacific region...</p>
+      </div>
+
+      <!-- Eastern Pacific summary (hidden initially) -->
+      <div id="summary-eastern" class="bg-white rounded-xl shadow-lg p-4 hidden">
+        <h2 class="text-3xl font-bold text-gray-800 mb-3">Eastern Pacific Summary</h2>
+
+        <div class="mb-6 flex justify-center">
+          <div class="inline-flex rounded-md shadow-sm space-x-4" role="group" aria-label="Summary level" id="expertise-tabs-eastern">
+            <button type="button" class="summary-level-btn px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-blue-500 text-white hover:bg-blue-600" aria-pressed="true">No Summary</button>
+            <button type="button" class="summary-level-btn px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Novice</button>
+            <button type="button" class="summary-level-btn px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Moderate</button>
+            <button type="button" class="summary-level-btn px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Expert</button>
+          </div>
+        </div>
+
+        <p>Summary content for Eastern Pacific region...</p>
+      </div>
+
+    </div>
+
+    <!-- Right Panel: Storm icons for each region -->
+    <div class="md:col-span-15">
+
+      <!-- Atlantic storms -->
+      <div id="storms-atlantic" class="bg-white rounded-xl shadow-lg p-4">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Atlantic Storms</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+          <!-- example storm -->
+          <div class="storm-icon-card flex flex-col items-center cursor-pointer hover:shadow-lg transition-shadow rounded p-4 bg-sky-100">
+            <img src="{{ url_for('static', filename='assets/storm_icon_placeholder.svg') }}" alt="Storm Icon" class="w-16 h-16 mb-2">
+            <p class="text-center font-semibold text-gray-700">Storm Alpha</p>
+          </div>
+          <!-- more storms... -->
+        </div>
+      </div>
+
+      <!-- Central Pacific storms (hidden) -->
+      <div id="storms-central" class="bg-white rounded-xl shadow-lg p-4 hidden">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Central Pacific Storms</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+          <!-- example storm -->
+          <div class="storm-icon-card flex flex-col items-center cursor-pointer hover:shadow-lg transition-shadow rounded p-4 bg-sky-100">
+            <img src="{{ url_for('static', filename='assets/storm_icon_placeholder.svg') }}" alt="Storm Icon" class="w-16 h-16 mb-2">
+            <p class="text-center font-semibold text-gray-700">Storm Gamma</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Eastern Pacific storms (hidden) -->
+      <div id="storms-eastern" class="bg-white rounded-xl shadow-lg p-4 hidden">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Eastern Pacific Storms</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+          <!-- example storm -->
+          <div class="storm-icon-card flex flex-col items-center cursor-pointer hover:shadow-lg transition-shadow rounded p-4 bg-sky-100">
+            <img src="{{ url_for('static', filename='assets/storm_icon_placeholder.svg') }}" alt="Storm Icon" class="w-16 h-16 mb-2">
+            <p class="text-center font-semibold text-gray-700">Storm Delta</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  // Region toggle buttons
+  const regionButtons = document.querySelectorAll('#region-tabs button');
+
+  // Summary panels
+  const summaries = {
+    atlantic: document.getElementById('summary-atlantic'),
+    central: document.getElementById('summary-central'),
+    eastern: document.getElementById('summary-eastern'),
+  };
+
+  // Storm panels
+  const storms = {
+    atlantic: document.getElementById('storms-atlantic'),
+    central: document.getElementById('storms-central'),
+    eastern: document.getElementById('storms-eastern'),
+  };
+
+  regionButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      // Reset region buttons style and aria-pressed
+      regionButtons.forEach(btn => {
+        btn.classList.remove('bg-blue-500', 'text-white', 'hover:bg-blue-600');
+        btn.classList.add('bg-gray-800', 'text-gray-300', 'hover:bg-gray-600');
+        btn.setAttribute('aria-pressed', 'false');
+      });
+
+      // Set active region button styles
+      button.classList.add('bg-blue-500', 'text-white', 'hover:bg-blue-600');
+      button.classList.remove('bg-gray-800', 'text-gray-300', 'hover:bg-gray-600');
+      button.setAttribute('aria-pressed', 'true');
+
+      // Determine selected region
+      const region = button.id.replace('btn-', '');
+
+      // Show/hide summary panels
+      Object.keys(summaries).forEach(key => {
+        if (key === region) {
+          summaries[key].classList.remove('hidden');
+        } else {
+          summaries[key].classList.add('hidden');
+        }
+      });
+
+      // Show/hide storm panels
+      Object.keys(storms).forEach(key => {
+        if (key === region) {
+          storms[key].classList.remove('hidden');
+        } else {
+          storms[key].classList.add('hidden');
+        }
+      });
+    });
+  });
+
+  // Summary level buttons toggle logic (independent groups)
+  const expertiseTabs = document.querySelectorAll('[id^="expertise-tabs"]');
+
+  expertiseTabs.forEach(tabGroup => {
+    const buttons = tabGroup.querySelectorAll('button');
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Reset all buttons in this group
+        buttons.forEach(btn => {
+          btn.classList.remove('bg-blue-500', 'text-white', 'hover:bg-blue-600');
+          btn.classList.add('bg-gray-800', 'text-gray-300', 'hover:bg-gray-600');
+          btn.setAttribute('aria-pressed', 'false');
+        });
+
+        // Set clicked button active
+        button.classList.add('bg-blue-500', 'text-white', 'hover:bg-blue-600');
+        button.classList.remove('bg-gray-800', 'text-gray-300', 'hover:bg-gray-600');
+        button.setAttribute('aria-pressed', 'true');
+
+        console.log("Summary level selected:", button.textContent.trim());
+        // TODO: Add dynamic summary update logic here
+      });
+    });
+  });
+</script>
+
+{% endblock %}

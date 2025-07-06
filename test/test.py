@@ -70,11 +70,11 @@ def test_emailer():
 
 def test_get_tropical_forecast():
     df = Data_Fetcher("Raleigh", "imperial")
-    tropical_data = df.get_tropical_data()
+    tropical_data, storm_codes = df.get_tropical_data()
 
-    return tropical_data
+    return tropical_data, storm_codes
 
-#tropical_data = test_get_forecast()
+tropical_data, storm_codes = test_get_tropical_forecast()
 
 def test_get_twd_summary():
     df = Data_Fetcher("Raleigh", "imperial")
@@ -85,4 +85,15 @@ def test_get_twd_summary():
     
     return text
 
-text = test_get_twd_summary()
+#text = test_get_twd_summary()
+
+def test_get_storm_summary():
+    df = Data_Fetcher("Raleigh", "imperial")
+    tropical_data = df.get_tropical_data()
+
+    summarizer = Summarizer("expert", storm_discussion = tropical_data['Atlantic']['Chantal']['discussions'][0]['description'])
+    text = summarizer.generate_Storm_Summary()
+    
+    return text
+
+#text = test_get_storm_summary()

@@ -295,21 +295,62 @@ class Summarizer:
 
     def generate_Storm_Summary(self):
         if self.weather_knowledge == "expert":
-            prompt_string = """"""
+            prompt_string = """
+                You are a meteorologist and educator. Your task is to write a clear, structured summary of the latest National Hurricane Center (NHC) Tropical Storm Forecast Discussion (TWD) for a specific storm. Focus on significant features, intensification trends, storm structure info, track info etc... Use technical terms appropriate for an audience with a strong meteorological background (assume a degree or strong training).
+
+                Write for this specific audience level: Expert – For those with a meteorology background. Use technical terms (e.g., CAPE, shear, rapid intensification, synoptic/mesoscale features) and concise scientific explanations. Keep it focused and professional.
+
+                Write 2-3 concise paragraphs.
+                Explain key features, track, convection, intensification, and interactions, etc...
+                Include any information about landfall times, any crucial information
+                Synthesize the information; do not copy-paste.
+                Do not invent information; only use the provided discussion.
+                Maintain professional and scientific tone.
+
+                The regional tropical weather discussion will be provided below.
+                """
             
-            afd = """"""
+            afd = prompt_string + "\n\n" + self.storm_discussion
             
         elif self.weather_knowledge == "moderate":
-            prompt_string = """"""
+            prompt_string = """
+                You are a meteorologist and educator. Your task is to write a clear, structured summary of the latest National Hurricane Center (NHC) Tropical Storm Forecast Discussion (TWD) for a specific storm for a weather-savvy audience. Focus on significant features, intensification trends, storm structure info, track info etc... Use mostly plain language and clearly explain storms
+
+                Write for this specific audience level: Moderate – For weather enthusiasts or TV-weather-savvy readers. Use plain language with light explanations of weather features (e.g., “a weak front will help to steer the storm…”). Include some causes and effects without overwhelming detail.
+
+                Write 2-3 concise paragraphs.
+                Explain key features, track, convection, intensification, and interactions, etc...
+                Include any information about landfall times, any crucial information
+                Synthesize the information; do not copy-paste.
+                Do not invent information; only use the provided discussion.
+                Maintain professional and scientific tone.
+                If you include any advanced vocabulary, ensure to explain it
+
+                The regional tropical weather discussion will be provided below.
+                """
             
-            afd = """"""
+            afd = prompt_string + "\n\n" + self.storm_discussion
             
         elif self.weather_knowledge == "none":
-            prompt_string = """"""
+            prompt_string = """
+                You are a meteorologist and educator. Your task is to write a clear, structured summary of the latest National Hurricane Center (NHC) Tropical Storm Forecast Discussion (TWD) for a specific storm for audience with limited to no meteorological background. Focus on significant features, intensification trends, storm structure info, track info etc... Use mostly plain language and clearly explain storms.
+
+                Write for this specific audience level: For the general public. Use simple, clear language with basic educational value. Focus on what will happen and why, without jargon. Be respectful and informative without sounding condescending. 
+
+                Write 2-3 concise paragraphs.
+                Explain key features, track, convection, intensification, and interactions, etc...
+                Include any information about landfall times, any crucial information
+                Synthesize the information; do not copy-paste.
+                Do not invent information; only use the provided discussion.
+                Maintain professional and scientific tone.
+                If you include any advanced vocabulary, ensure to explain it
+
+                The regional tropical weather discussion will be provided below.
+                """
             
-            afd = """"""
+            afd = prompt_string + "\n\n" + self.storm_discussion
         elif self.weather_knowledge == "no_summary":
-            afd = ""
+            afd = self.storm_discussion
 
         if self.weather_knowledge == "no_summary":
             text = afd
