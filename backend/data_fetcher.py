@@ -246,6 +246,8 @@ class Data_Fetcher:
                 # in tact I am simply moving this out of the messy block that builds my dictionary. 
                 if 'local statement' in title_lower:
                     city = item['title'].replace('Local Statement for', '').strip()
+                    getLatLon = Data_Fetcher(city, self.units)
+                    coords = getLatLon.get_latlon()
                     full_text = self.fetch_local_statement_text(item['link'])
 
                     # Find the keywords at the beginning of the discussion
@@ -271,6 +273,7 @@ class Data_Fetcher:
 
                     storms[storm_name]['local_statements'].append({
                         'city': city,
+                        'coords': coords,
                         'title': item.get('title'),
                         'pubDate': item.get('pubDate'),
                         'description': item.get('description'),
@@ -382,6 +385,8 @@ class Data_Fetcher:
 
             except Exception as e:
                 print(f"Failed to download or extract shapefile for {name} ({code}): {e}")
+
+        return tropical_data
 
     def get_forecast_office(self, lat, lon):
         '''

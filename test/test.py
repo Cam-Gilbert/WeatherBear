@@ -68,10 +68,21 @@ def test_emailer():
 
 #print(email)
 
-def test_get_forecast():
+def test_get_tropical_forecast():
     df = Data_Fetcher("Raleigh", "imperial")
     tropical_data = df.get_tropical_data()
 
     return tropical_data
 
-tropical_data = test_get_forecast()
+#tropical_data = test_get_forecast()
+
+def test_get_twd_summary():
+    df = Data_Fetcher("Raleigh", "imperial")
+    tropical_data = df.get_tropical_data()
+
+    summarizer = Summarizer("expert", twd_discussion = tropical_data['Atlantic']['twd_discussions'][0]['discussion'])
+    text = summarizer.generate_Region_Summary()
+    
+    return text
+
+text = test_get_twd_summary()

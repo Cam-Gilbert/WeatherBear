@@ -6,17 +6,25 @@ class Summarizer:
     '''
     Summarizer Class. Contains methods to summarize area forecast discussions and also explain selected sections of text from 
     the summarized forecast discussions that the user does not understand. 
+
+    Need to add a method to summarize region wide tropical weather discussions
+    Need to add a method to summarize storm specific discussions
+
     '''
-    def __init__(self, weather_knowledge, afd):
+    def __init__(self, weather_knowledge, afd = None, twd_discussion = None, storm_discussion = None):
         '''
         Summarizer object initialization method (constructor)
 
         @param weather_knowledge the users weather expertise - controls the level at which the afd is summarized. Will either be 
             "expert", "moderate", "none", or "no_summary". Also controls the level at which text explanations are explained.
         @param afd the area forecast discussion that will be summarized
+        @param twd_discussion the tropical weather discussion pulled from the nhc
+        @param storm_discussion the specifc discussion related to a tropical storm. 
         '''
         self.weather_knowledge = weather_knowledge
         self.afd = afd
+        self.twd_discussion = twd_discussion
+        self.storm_discussion = storm_discussion
 
     def generate_Message(self):
         '''
@@ -281,5 +289,137 @@ class Summarizer:
         except Exception as e:
             print(f"OpenAI API Error: {e}")
             text = "There was an error generating the explanation."
+        
+        return text
+    
+
+    def generate_Storm_Summary(self):
+        if self.weather_knowledge == "expert":
+            prompt_string = """"""
+            
+            afd = """"""
+            
+        elif self.weather_knowledge == "moderate":
+            prompt_string = """"""
+            
+            afd = """"""
+            
+        elif self.weather_knowledge == "none":
+            prompt_string = """"""
+            
+            afd = """"""
+        elif self.weather_knowledge == "no_summary":
+            afd = ""
+
+        if self.weather_knowledge == "no_summary":
+            text = afd
+        else:
+            # connect to openai
+            openai.api_key = os.getenv("API_KEY") 
+
+            # build messages data structure to pass to openai
+            messages = [
+                {"role": "system", "content": prompt_string},
+                {"role": "user", "content": afd}
+            ]
+            try:
+                # create chat message
+                response = openai.chat.completions.create(
+                    model="gpt-4.1-mini", 
+                    messages=messages,
+                    temperature=0.7
+                )
+                # get response
+                text = response.choices[0].message.content.strip()
+            except Exception as e:
+                print(f"OpenAI API Error: {e}")
+                text = "There was an error generating the summary."
+        
+        return text
+    
+    def generate_Region_Summary(self):
+        if self.weather_knowledge == "expert":
+            prompt_string = """
+                You are a meteorologist and educator. Your task is to write a clear, structured summary of the latest National Hurricane Center (NHC) Tropical Weather Discussion (TWD) covering an entire region. Focus on significant features, tropical waves, and large-scale weather patterns impacting the region. Use technical terms appropriate for an audience with a strong meteorological background (assume a degree or strong training).
+
+                Write for this specific audience level: Expert – For those with a meteorology background. Use technical terms (e.g., CAPE, shear, shortwaves, synoptic/mesoscale features) and concise scientific explanations. Keep it focused and professional.
+
+                Write 3-4 concise paragraphs.
+                Explain key synoptic features, tropical waves, convection, and interactions.
+                Synthesize the information; do not copy-paste.
+                Do not invent information; only use the provided discussion.
+                Maintain professional and scientific tone.
+                Structure the summary in a similar way to the discussion. Start out with any notable features (storms, etc...) and include important information on them. Then transition into sections
+
+                The regional tropical weather discussion will be provided below.
+                """
+            
+            afd = prompt_string + "\n\n" + self.twd_discussion
+            
+        elif self.weather_knowledge == "moderate":
+            prompt_string = """
+                You are a meteorologist and educator. Summarize the latest National Hurricane Center (NHC) Tropical Weather Discussion (TWD) for a weather-savvy audience. Use mostly plain language and clearly explain storms, and other significant features affecting the region.
+
+                Write for this specific audience level: Moderate – For weather enthusiasts or TV-weather-savvy readers. Use plain language with light explanations of weather features (e.g., “a weak front will help to steer the storm…”). Include some causes and effects without overwhelming detail.
+
+                Write 3-4 concise paragraphs.
+                Focus on key weather features and expected impacts.
+                Synthesize the information; do not copy-paste.
+                Do not invent information; only use the provided discussion.
+                Maintain clear, engaging tone.
+                If you include any advanced vocabulary, ensure to explain it
+                Structure the summary in a similar way to the discussion. Start out with any notable features (storms, etc...) and include important information on them. Then transition into sections
+
+                The regional tropical weather discussion will be provided below.
+                """
+            
+            afd = prompt_string + "\n\n" + self.twd_discussion
+            
+        elif self.weather_knowledge == "none":
+            prompt_string = """
+                You are a meteorologist and educator. Summarize the latest National Hurricane Center (NHC) Tropical Weather Discussion (TWD) for an audience with limited to no meteorological background. Use mostly plain language and clearly explain storms, and other significant features affecting the region.
+
+                Write for this specific audience level: For the general public. Use simple, clear language with basic educational value. Focus on what will happen and why, without jargon. Be respectful and informative without sounding condescending. 
+
+                Write 2-3 concise paragraphs.
+                Focus on key weather features and expected impacts.
+                Synthesize the information; do not copy-paste.
+                Do not invent information; only use the provided discussion.
+                Maintain clear, engaging tone.
+                If you include any advanced vocabulary, ensure to explain it
+                Structure the summary in a similar way to the discussion. Start out with any notable features (storms, etc...) and include important information on them. Then transition into sections.
+                Ignore discussion complex topics like tropical waves
+
+                The regional tropical weather discussion will be provided below.
+                """
+            
+            afd = prompt_string + "\n\n" + self.twd_discussion
+            
+        elif self.weather_knowledge == "no_summary":
+            afd = self.twd_discussion
+
+        if self.weather_knowledge == "no_summary":
+            text = afd
+        else:
+            # connect to openai
+            openai.api_key = os.getenv("API_KEY") 
+
+            # build messages data structure to pass to openai
+            messages = [
+                {"role": "system", "content": prompt_string},
+                {"role": "user", "content": afd}
+            ]
+            try:
+                # create chat message
+                response = openai.chat.completions.create(
+                    model="gpt-4.1-mini", 
+                    messages=messages,
+                    temperature=0.7
+                )
+                # get response
+                text = response.choices[0].message.content.strip()
+            except Exception as e:
+                print(f"OpenAI API Error: {e}")
+                text = "There was an error generating the summary."
         
         return text
