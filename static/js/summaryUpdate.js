@@ -1,4 +1,5 @@
 import { fetchAndRenderForecast } from "./forecastRender.js";
+import { enableExplanation } from "./explainer.js";
 
 function showErrorMessage(msg) {
   const errorBox = document.getElementById("error-box");
@@ -15,59 +16,6 @@ function clearErrorMessage() {
     errorBox.style.display = "none";
   }
 }
-
-async function handleTextExplanation() {
-  if (!explanationEnabled) return;
-
-  const selection = window.getSelection();
-  const selectedText = selection.toString().trim();
-  const summaryText = document.getElementById("summary-text");
-
-  if (selectedText && summaryText.contains(selection.anchorNode)) {
-    const rect = selection.getRangeAt(0).getBoundingClientRect();
-
-    const oldPopup = document.getElementById("explanation-popup");
-    if (oldPopup) oldPopup.remove();
-
-    const popup = document.createElement("div");
-    popup.id = "explanation-popup";
-    popup.className =
-      "absolute z-50 bg-white text-sm text-gray-800 border border-gray-300 rounded-xl shadow-lg p-2 max-w-xs";
-    popup.style.top = `${rect.bottom + window.scrollY + 5}px`;
-    popup.style.left = `${rect.left + window.scrollX}px`;
-    popup.textContent = "Loading explanation...";
-
-    document.body.appendChild(popup);
-
-    try {
-      const response = await fetch("/explain-text", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: selectedText,
-          summary: summaryText.textContent,
-          afd: fullAfdText,
-          expertise: currentExpertiseLevel
-        })
-      });
-
-      const data = await response.json();
-      popup.textContent = data.explanation || "No explanation found.";
-    } catch (error) {
-      console.error("Error fetching explanation:", error);
-      popup.textContent = "Error getting explanation.";
-    }
-
-    const handleClickOutside = (e) => {
-      if (!popup.contains(e.target)) {
-        popup.remove();
-        document.removeEventListener("mousedown", handleClickOutside);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-  }
-}
-
 
 let fullAfdText = "";
 let currentExpertiseLevel = "";
@@ -176,6 +124,14 @@ window.addEventListener("DOMContentLoaded", () => {
       // Show summary
       summaryText.textContent = data.summary;
       summaryPanel.classList.remove("hidden");
+      enableExplanation({
+        containerSelector: "#summary-text",
+        getContextData: () => ({
+          summary: summaryText.textContent,
+          afd: fullAfdText,
+          expertise: currentExpertiseLevel
+        })
+      });
 
       // reset explain toggle
       const explainToggle = document.getElementById("explain-toggle");
@@ -196,37 +152,4 @@ window.addEventListener("DOMContentLoaded", () => {
       submitButton.textContent = "Get Forecast";
     }
   });
-});
-
-
-// Logic for additional explanation feature
-let explanationEnabled = false;
-
-document.addEventListener("click", (event) => {
-  const toggle = event.target.closest("#explain-toggle");
-  if (toggle) {
-    explanationEnabled = !explanationEnabled;
-    toggle.textContent = explanationEnabled
-      ? "🟢 Explanation mode enabled. Select text to get help (click to disable)."
-      : "💡 Confused? Click here and select text for more information.";
-  }
-});
-
-document.addEventListener("mouseup", handleTextExplanation);
-document.addEventListener("selectionchange", () => {
-  if (!explanationEnabled) return;
-
-  // Delay to allow selection to finish
-  clearTimeout(window.__explanationDelay);
-  window.__explanationDelay = setTimeout(() => {
-    const summaryText = document.getElementById("summary-text");
-    const selection = window.getSelection();
-    if (
-      selection &&
-      selection.toString().trim().length > 0 &&
-      summaryText.contains(selection.anchorNode)
-    ) {
-      handleTextExplanation();
-    }
-  }, 300);
 });

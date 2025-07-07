@@ -26,7 +26,7 @@ def main_tropics_loop():
 
     # need to generate 4 summaries for each region.     
     regions = ["Atlantic", "Central_Pacific", "Eastern_Pacific"]
-    knowledge_levels = ["no_summary","none", "moderate", "expert"]
+    knowledge_levels = ["no_summary", "none", "moderate", "expert"]
 
     region_data = {
         region: {

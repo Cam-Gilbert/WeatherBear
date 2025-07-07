@@ -1,73 +1,58 @@
+import { enableExplanation } from "./explainer.js";
+
 function fetchTropicalSummary(region, expertise) {
-  const regionMap = {
-    "atlantic": "Atlantic",
-    "central": "Central_Pacific",
-    "eastern": "Eastern_Pacific"
-  };
-
-  const jsonRegion = regionMap[region] || region;
-
-  const panelIdMap = {
-    "Atlantic": "atlantic",
-    "Central_Pacific": "central",
-    "Eastern_Pacific": "eastern"
-  };
-
-  const panelRegion = panelIdMap[jsonRegion];
-
-  console.log(`Fetching: ${jsonRegion} | Expertise: ${expertise}`);
+  console.log(`Fetching: ${region} | Expertise: ${expertise}`);
 
   fetch("/get-tropical-summary", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ region: jsonRegion, expertise })
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ region, expertise })
   })
-  .then(response => response.json())
-  .then(data => {
-    if (data.summary) {
-      const panel = document.querySelector(`#summary-${panelRegion}`);
-      if (!panel) {
-        console.warn(`Could not find summary panel for: #summary-${panelRegion}`);
-        return;
+    .then(response => response.json())
+    .then(data => {
+      if (data.summary) {
+        const panel = document.querySelector(`#summary-${region}`);
+        if (!panel) {
+          console.warn(`Panel not found for #summary-${region}`);
+          return;
+        }
+        const summaryPara = panel.querySelector("p");
+        if (!summaryPara) {
+          console.warn(`No <p> in #summary-${region}`);
+          return;
+        }
+        summaryPara.textContent = data.summary;
+        enableExplanation({
+          containerSelector: `#summary-${region} p`,
+          toggleSelector: `#explain-toggle-${region}`,
+          getContextData: () => ({
+            summary: summaryPara.textContent,
+            afd: data.afd || "",
+            expertise: expertise
+          })
+        });
+        const explainToggle = document.querySelector(`#explain-toggle-${region}`);
+        if (explainToggle) {
+          explainToggle.checked = false;
+          explainToggle.nextElementSibling.textContent =
+            "💡 Confused? Click here and select text for an in-depth explanation.";
+        }
+
+      } else {
+        console.warn("No summary found:", data.error);
       }
-      const summaryPara = panel.querySelector("p");
-      if (!summaryPara) {
-        console.warn(`No <p> tag found inside panel #summary-${panelRegion}`);
-        return;
-      }
-      summaryPara.textContent = data.summary;
-    } else {
-      console.warn("No summary found:", data.error);
-    }
-  })
-  .catch(error => console.error("Error fetching summary:", error));
+    })
+    .catch(error => console.error("Error fetching summary:", error));
 }
 
-
-
-document.addEventListener("DOMContentLoaded", () => {
-  // Auto-fetch default summaries for each region
-  fetchTropicalSummary("atlantic", "no_summary");
-  fetchTropicalSummary("eastern", "no_summary");
-  fetchTropicalSummary("central", "no_summary");
-
-  // Hook up all expertise tab groups
-  const allExpertiseGroups = document.querySelectorAll('[id^="expertise-tabs"]');
-
-  allExpertiseGroups.forEach(group => {
-    const region = group.id.replace("expertise-tabs-", "").toLowerCase();
-
-    group.querySelectorAll("button").forEach(button => {
-      button.addEventListener("click", () => {
-        let expertiseText = button.textContent.trim().toLowerCase().replace(" ", "_");
-        if (expertiseText === "novice") {
-        expertiseText = "none";
-        }
-        const expertise = expertiseText;
-        fetchTropicalSummary(region, expertise);
-      });
-    });
+document.querySelectorAll(".summary-button").forEach(button => {
+  button.addEventListener("click", () => {
+    const region = button.getAttribute("data-region");
+    const expertise = button.getAttribute("data-expertise");
+    fetchTropicalSummary(region, expertise);
   });
 });
+
+// i deadass dont know why this is being put here I cannot get these damn buttons to work 
+window.fetchTropicalSummary = fetchTropicalSummary;
+window.enableExplanation = enableExplanation;

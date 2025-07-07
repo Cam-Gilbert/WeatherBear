@@ -380,14 +380,33 @@ def get_tropical_summary():
     except Exception as e:
         return jsonify({"error {e}": "Error Loading Summaries"}), 400
 
+    summary_text = None
+    full_afd = None
+    issued_time = None
+
     for item in summaries:
         if item["region"].lower() == region.lower() and item["knowledge_level"] == expertise:
-            return jsonify({
-                "summary": item["summary"],
-                "issued": item.get("issed")
-            })
+            summary_text = item["summary"]
+            issued_time = item.get("issued")
+        elif item["region"].lower() == region.lower() and item["knowledge_level"] == "no_summary":
+            full_afd = item["summary"]
 
-    return jsonify({"error": "No matching summary found"}), 404
+    if not full_afd and expertise == "no_summary":
+        full_afd = summary_text
+
+    print("--- Tropics Summary Debug ---")
+    print(f"Region: {region}, Expertise: {expertise}")
+    print(f"Summary: {'present' if summary_text else 'MISSING'}")
+    print(f"AFD (no_summary): {'present' if full_afd else 'MISSING'}")
+
+    if summary_text:
+        return jsonify({
+            "summary": summary_text,
+            "afd": full_afd,
+            "issued": issued_time
+        })
+    else:
+        return jsonify({"error": "No matching summary found"}), 404
 
 
 def determine_icon(link):

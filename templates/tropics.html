@@ -14,6 +14,7 @@
       <button
         id="btn-atlantic"
         role="tab"
+        data-region="atlantic"
         aria-selected="true"
         type="button"
         class="summary-level-btn
@@ -35,6 +36,7 @@
       <button
         id="btn-eastern"
         role="tab"
+        data-region="eastern_pacific"
         aria-selected="false"
         type="button"
         class="summary-level-btn
@@ -55,6 +57,7 @@
       <button
         id="btn-central"
         role="tab"
+        data-region="central_pacific"
         aria-selected="false"
         type="button"
         class="summary-level-btn
@@ -80,49 +83,73 @@
     <div class="md:col-span-9">
 
       <!-- Atlantic summary -->
-      <div id="summary-atlantic" class="bg-white rounded-xl shadow-lg p-4">
+      <div id="summary-Atlantic" class="bg-white rounded-xl shadow-lg p-4">
         <h2 class="text-3xl font-bold text-gray-800 mb-3">Atlantic Tropical Weather Summary</h2>
 
         <!-- Summary level buttons WITHOUT label, centered and spaced -->
         <div class="mb-6 flex justify-center">
           <div class="flex justify-center gap-4 w-full" role="group" aria-label="Summary level" id="expertise-tabs-Atlantic">
-            <button type="button" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-blue-500 text-white hover:bg-blue-600" aria-pressed="true">No Summary</button>
-            <button type="button" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Novice</button>
-            <button type="button" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Moderate</button>
-            <button type="button" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Expert</button>
+            <button type="button" data-region="Atlantic" data-expertise="no_summary" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-blue-500 text-white hover:bg-blue-600" aria-pressed="true">No Summary</button>
+            <button type="button" data-region="Atlantic" data-expertise="none" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Novice</button>
+            <button type="button" data-region="Atlantic" data-expertise="moderate" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Moderate</button>
+            <button type="button" data-region="Atlantic" data-expertise="expert" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Expert</button>
           </div>
         </div>
+
+        <div class="flex items-start gap-3 mb-4">
+          <input type="checkbox" id="explain-toggle-Atlantic"
+            class="w-5 h-5 rounded accent-blue-600 mt-1">
+          <label for="explain-toggle-Atlantic" class="text-sm text-gray-800 leading-snug">
+            Enable explanation mode and select a portion of text for an in-depth explanation
+          </label>
+        </div>  
 
         <p class="mb-4 text-lg text-gray-600 whitespace-pre-line leading-relaxed">Loading summary for the Atlantic region...</p>
       </div>
 
       <!-- Central Pacific summary (hidden initially) -->
-      <div id="summary-central" class="bg-white rounded-xl shadow-lg p-4 hidden">
+      <div id="summary-Central_Pacific" class="bg-white rounded-xl shadow-lg p-4 hidden">
         <h2 class="text-3xl font-bold text-gray-800 mb-3">Central Pacific Tropical Weather Summary</h2>
 
         <div class="mb-6 flex justify-center">
           <div class="flex justify-center gap-4 w-full" role="group" aria-label="Summary level" id="expertise-tabs-Central_Pacific">
-            <button type="button" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-blue-500 text-white hover:bg-blue-600" aria-pressed="true">No Summary</button>
-            <button type="button" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Novice</button>
-            <button type="button" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Moderate</button>
-            <button type="button" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Expert</button>
+            <button type="button" data-region="Central_Pacific" data-expertise="no_summary" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-blue-500 text-white hover:bg-blue-600" aria-pressed="true">No Summary</button>
+            <button type="button" data-region="Central_Pacific" data-expertise="none" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Novice</button>
+            <button type="button" data-region="Central_Pacific" data-expertise="moderate" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Moderate</button>
+            <button type="button" data-region="Central_Pacific" data-expertise="expert" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Expert</button>
           </div>
+        </div>
+
+        <div class="flex items-start gap-3 mb-4">
+          <input type="checkbox" id="explain-toggle-Central_Pacific"
+            class="w-5 h-5 rounded accent-blue-600 mt-1">
+          <label for="explain-toggle-Central_Pacific" class="text-sm text-gray-800 leading-snug">
+            Enable explanation mode and select a portion of text for an in-depth explanation
+          </label>
         </div>
 
         <p class="mb-4 text-lg text-gray-600 whitespace-pre-line leading-relaxed">Loading summary for the Central Pacific region...</p>
       </div>
 
       <!-- Eastern Pacific summary (hidden initially) -->
-      <div id="summary-eastern" class="bg-white rounded-xl shadow-lg p-4 hidden">
+      <div id="summary-Eastern_Pacific" class="bg-white rounded-xl shadow-lg p-4 hidden">
         <h2 class="text-3xl font-bold text-gray-800 mb-3">Eastern Pacific Tropical Weather Summary</h2>
 
         <div class="mb-6 flex justify-center">
           <div class="flex justify-center gap-4 w-full" role="group" aria-label="Summary level" id="expertise-tabs-Eastern_Pacific">
-            <button type="button" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-blue-500 text-white hover:bg-blue-600" aria-pressed="true">No Summary</button>
-            <button type="button" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Novice</button>
-            <button type="button" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Moderate</button>
-            <button type="button" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Expert</button>
+            <button type="button" data-region="Eastern_Pacific" data-expertise="no_summary" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-blue-500 text-white hover:bg-blue-600" aria-pressed="true">No Summary</button>
+            <button type="button" data-region="Eastern_Pacific" data-expertise="none" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Novice</button>
+            <button type="button" data-region="Eastern_Pacific" data-expertise="moderate" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Moderate</button>
+            <button type="button" data-region="Eastern_Pacific" data-expertise="expert" class="summary-level-btn flex-1 min-w-0 px-4 py-2 text-xs sm:px-6 sm:py-3 sm:text-base rounded bg-gray-800 text-gray-300 hover:bg-gray-600" aria-pressed="false">Expert</button>
           </div>
+        </div>
+
+        <div class="flex items-start gap-3 mb-4">
+          <input type="checkbox" id="explain-toggle-Eastern_Pacific"
+            class="w-5 h-5 rounded accent-blue-600 mt-1">
+          <label for="explain-toggle-Eastern_Pacific" class="text-sm text-gray-800 leading-snug">
+            Enable explanation mode and select a portion of text for an in-depth explanation
+          </label>
         </div>
 
         <p class="mb-4 text-lg text-gray-600 whitespace-pre-line leading-relaxed">Loading summary for the Eastern Pacific region...</p>
@@ -134,7 +161,7 @@
     <div class="md:col-span-15">
 
       <!-- Atlantic storms -->
-      <div id="storms-atlantic" class="bg-white rounded-xl shadow-lg p-4">
+      <div id="storms-Atlantic" class="bg-white rounded-xl shadow-lg p-4">
         <h2 class="text-2xl font-bold text-gray-800 mb-4">Active Atlantic Storms</h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
           <!-- example storm -->
@@ -147,7 +174,7 @@
       </div>
 
       <!-- Central Pacific storms (hidden) -->
-      <div id="storms-central" class="bg-white rounded-xl shadow-lg p-4 hidden">
+      <div id="storms-Central_Pacific" class="bg-white rounded-xl shadow-lg p-4 hidden">
         <h2 class="text-2xl font-bold text-gray-800 mb-4">Active Central Pacific Storms</h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
           <!-- example storm -->
@@ -159,7 +186,7 @@
       </div>
 
       <!-- Eastern Pacific storms (hidden) -->
-      <div id="storms-eastern" class="bg-white rounded-xl shadow-lg p-4 hidden">
+      <div id="storms-Eastern_Pacific" class="bg-white rounded-xl shadow-lg p-4 hidden">
         <h2 class="text-2xl font-bold text-gray-800 mb-4">Active Eastern Pacific Storms</h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
           <!-- example storm -->
@@ -180,56 +207,46 @@
   // Region toggle buttons
   const regionButtons = document.querySelectorAll('#region-tabs button');
 
-  // Summary panels
+  // New: use data-region values directly as keys
   const summaries = {
-    atlantic: document.getElementById('summary-atlantic'),
-    central: document.getElementById('summary-central'),
-    eastern: document.getElementById('summary-eastern'),
+    atlantic: document.getElementById('summary-Atlantic'),
+    central_pacific: document.getElementById('summary-Central_Pacific'),
+    eastern_pacific: document.getElementById('summary-Eastern_Pacific'),
   };
 
-  // Storm panels
   const storms = {
-    atlantic: document.getElementById('storms-atlantic'),
-    central: document.getElementById('storms-central'),
-    eastern: document.getElementById('storms-eastern'),
+    atlantic: document.getElementById('storms-Atlantic'),
+    central_pacific: document.getElementById('storms-Central_Pacific'),
+    eastern_pacific: document.getElementById('storms-Eastern_Pacific'),
   };
 
   regionButtons.forEach(button => {
     button.addEventListener('click', () => {
-      // Reset region buttons style and aria-pressed
+      // Reset styling
       regionButtons.forEach(btn => {
         btn.classList.remove('bg-blue-500', 'text-white', 'hover:bg-blue-600');
         btn.classList.add('bg-gray-800', 'text-gray-300', 'hover:bg-gray-600');
         btn.setAttribute('aria-pressed', 'false');
       });
 
-      // Set active region button styles
+      // Highlight active button
       button.classList.add('bg-blue-500', 'text-white', 'hover:bg-blue-600');
       button.classList.remove('bg-gray-800', 'text-gray-300', 'hover:bg-gray-600');
       button.setAttribute('aria-pressed', 'true');
 
-      // Determine selected region
-      const region = button.id.replace('btn-', '');
+      const region = button.dataset.region;
 
-      // Show/hide summary panels
-      Object.keys(summaries).forEach(key => {
-        if (key === region) {
-          summaries[key].classList.remove('hidden');
-        } else {
-          summaries[key].classList.add('hidden');
-        }
+      // Match region key directly
+      Object.entries(summaries).forEach(([key, el]) => {
+        el.classList.toggle('hidden', key !== region);
       });
 
-      // Show/hide storm panels
-      Object.keys(storms).forEach(key => {
-        if (key === region) {
-          storms[key].classList.remove('hidden');
-        } else {
-          storms[key].classList.add('hidden');
-        }
+      Object.entries(storms).forEach(([key, el]) => {
+        el.classList.toggle('hidden', key !== region);
       });
     });
   });
+
 
   // Summary level buttons toggle logic (independent groups)
   const expertiseTabs = document.querySelectorAll('[id^="expertise-tabs"]');
@@ -250,15 +267,22 @@
         button.classList.remove('bg-gray-800', 'text-gray-300', 'hover:bg-gray-600');
         button.setAttribute('aria-pressed', 'true');
 
-        const region = tabGroup.id.replace("expertise-tabs-", "").toLowerCase();
-        const expertise = button.textContent.trim().toLowerCase().replace(" ", "_");
+        const region = button.dataset.region;
+        const expertise = button.dataset.expertise;
         fetchTropicalSummary(region, expertise);
       });
     });
   });
+
+  window.addEventListener("DOMContentLoaded", () => {
+    fetchTropicalSummary("Atlantic", "no_summary");
+    fetchTropicalSummary("Central_Pacific", "no_summary");
+    fetchTropicalSummary("Eastern_Pacific", "no_summary");
+  });
 </script>
 
-<script src="{{ url_for('static', filename='js/getTropicalSummary.js') }}"></script>
+<script type = "module" src = "{{ url_for('static', filename='js/getTropicalSummary.js') }}"></script>
+<script type = "module" src = "{{ url_for('static', filename='js/explainer.js') }}"></script>
 
 
 {% endblock %}
