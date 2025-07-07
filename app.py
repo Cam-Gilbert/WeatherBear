@@ -8,6 +8,7 @@ from backend.data_fetcher import Data_Fetcher, LocationError, ForecastError
 from backend.user import User, load_users, save_users, find_user_by_email
 from backend.summarizer import Summarizer
 from backend.main import main_loop
+from backend.tropics import load_summaries
 from backend.tropics import main_tropics_loop
 from datetime import datetime
 
@@ -360,6 +361,33 @@ def get_summary():
         "afd": forecast_discussion,
         "expertise": expertise
     })
+
+@app.route("/get-tropical-summary", methods=["POST"])
+def get_tropical_summary():
+    '''
+    Returns a summary for a given region and expertise level by looking up
+    a pre-generated JSON file at /mnt/data/tropics_data.json.
+    '''
+    data = request.get_json()
+    region = data.get("region")
+    expertise = data.get("expertise", "").lower()
+
+    if not region or not expertise:
+        return jsonify({"error": "Missing region or expertise"}), 400
+
+    try:
+        summaries = load_summaries()
+    except Exception as e:
+        return jsonify({"error {e}": "Error Loading Summaries"}), 400
+
+    for item in summaries:
+        if item["region"].lower() == region.lower() and item["knowledge_level"] == expertise:
+            return jsonify({
+                "summary": item["summary"],
+                "issued": item.get("issed")
+            })
+
+    return jsonify({"error": "No matching summary found"}), 404
 
 
 def determine_icon(link):

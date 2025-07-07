@@ -213,7 +213,11 @@ class Data_Fetcher:
                 print(f"Unexpected error parsing tropical data: {e}")
 
             # Get items to iterate thru, this is like tropical weather outlook, public advisorys, summaries, etc...
-            items = data['rss']['channel']['item']
+            try:
+                items = data['rss']['channel']['item']
+            except Exception:
+                items = []
+            
 
             storms = {}
     
