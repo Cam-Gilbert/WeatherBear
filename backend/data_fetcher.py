@@ -350,6 +350,8 @@ class Data_Fetcher:
             name = storm.get("name")
             region = storm.get("region")
 
+            print(code, name, region)
+
             if not code:
                 continue  # skip storms without code
 

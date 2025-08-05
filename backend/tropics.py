@@ -1,9 +1,12 @@
 import os
 import json
 from backend.data_fetcher import Data_Fetcher
+from backend.storm import Storm
+from backend.region import Region
 from backend.summarizer import Summarizer
 from filelock import FileLock
 
+## this is going to need to change once moved to hosted platform.
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 DATA_DIR = os.path.join(BASE_DIR, 'WeatherBear', 'mnt', 'data')
 SUMMARY_PATH = os.path.join(DATA_DIR, 'tropics_data.json')
@@ -19,41 +22,59 @@ def main_tropics_loop():
     # Download shape files
     df.download_shape_files(storm_codes=storm_codes)
 
-    # Build summaries
-    atl_issued = tropical_data['Atlantic']['twd_discussion']['issued']
-    cp_issued = tropical_data['Central_Pacific']['twd_discussion']['issued']
-    ep_issued = tropical_data['Eastern_Pacific']['twd_discussion']['issued']
-
-    # need to generate 4 summaries for each region.     
-    regions = ["Atlantic", "Central_Pacific", "Eastern_Pacific"]
-    knowledge_levels = ["no_summary", "none", "moderate", "expert"]
-
-    region_data = {
-        region: {
-            "discussion": tropical_data[region]['twd_discussion']['discussion'],
-            "issued": tropical_data[region]['twd_discussion']['issued']
-        }
-        for region in regions
+    # make region objects
+    region_map = {
+        "Atlantic": Region("Atlantic"),
+        "Eastern_Pacific": Region("Eastern_Pacific"),
+        "Central_Pacific": Region("Central_Pacific"),
     }
 
-    # Container for all results
+    # load discussions into the region object
+    for region in region_map:
+        twd = tropical_data.get(region, {}).get("twd_discussion", {})
+        region_map[region].discussion = twd.get("discussion")
+
+    # create storms and save to regions storm list
+    for storm_meta in storm_codes:
+        region_name = storm_meta["region"]
+        storm_name = storm_meta["name"]
+        storm_id = storm_meta["code"]
+        region_dict = tropical_data.get(region_name, {})
+        storm_dict = region_dict.get(storm_name, {})
+
+        storm_obj = Storm(
+            name=storm_name,
+            id=storm_id,
+            region=region_name,
+            storm_center=storm_dict.get("summary", {}).get("nhc:position", ""),
+            movement=storm_dict.get("summary", {}).get("nhc:motion", ""),
+            pressure=storm_dict.get("summary", {}).get("nhc:pressure", ""),
+            type=storm_dict.get("summary", {}).get("nhc:stormType", ""),
+            wind_speed=storm_dict.get("summary", {}).get("nhc:wind", ""),
+            discussion=storm_dict.get("discussions"),
+            shapefile_path=storm_dict.get("shapefile_path"),
+            advisories=storm_dict.get("advisories"),
+            local_statements=storm_dict.get("local_statements")
+        )
+
+        region_map[region_name].add_storm(storm_obj)
+
+    # Generate summariews
+    knowledge_levels = ["no_summary", "none", "moderate", "expert"]
     all_data = []
 
-    for region in regions:
-        discussion = region_data[region]["discussion"]
-        issued = region_data[region]["issued"]
-
+    for region in region_map.values():
         for level in knowledge_levels:
-            summarizer = Summarizer(level, afd=None, twd_discussion=discussion, storm_discussion=None)
+            summarizer = Summarizer(level, afd=None, twd_discussion=region.discussion)
             summary_text = summarizer.generate_Region_Summary()
 
             if level != "no_summary":
-                summary_text = f"Issued at {issued}\n\n" + summary_text
+                summary_text = f"Issued for {region.name}\n\n" + summary_text
 
             all_data.append({
-                "region": region,
+                "region": region.name,
                 "knowledge_level": level,
-                "issued": issued,
+                "issued": None,  # You can restore this if TWD includes an "issued" time
                 "summary": summary_text
             })
 

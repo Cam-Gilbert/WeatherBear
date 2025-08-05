@@ -72,6 +72,8 @@ def test_get_tropical_forecast():
     df = Data_Fetcher("Raleigh", "imperial")
     tropical_data, storm_codes = df.get_tropical_data()
 
+    df.download_shape_files(storm_codes)
+
     return tropical_data, storm_codes
 
 tropical_data, storm_codes = test_get_tropical_forecast()
