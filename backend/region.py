@@ -66,3 +66,14 @@ class Region:
         Sort storms in the storm list by wind speed
         '''
         self.storms.sort(key=lambda s: s.wind_speed or 0, reverse = True)
+
+    @classmethod
+    def from_dict(cls, data):
+        """
+        Creates a region object based on a region dictionary
+        """
+        region = cls(name=data.get("name"), discussion=data.get("discussion"))
+        storms = data.get("storms", [])
+        for storm_data in storms:
+            region.add_storm(Storm.from_dict(storm_data))
+        return region

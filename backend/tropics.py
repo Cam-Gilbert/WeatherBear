@@ -80,7 +80,10 @@ def main_tropics_loop():
 
     print(f"Prepared {len(all_data)} summaries, saving now...")
     save_summaries(all_data)
-    print("Save complete.")
+    print("Summary Save complete.\n")
+    print("Saving Regional Storm Data")
+    save_regions(region_map=region_map)
+    print("Saved Storm and Region Information")
 
 
 def save_summaries(summaries):
@@ -114,3 +117,55 @@ def load_summaries():
             return []
         with open(SUMMARY_PATH, "r") as f:
             return json.load(f)
+        
+def save_regions(region_map):
+    """
+    Saves each Region object as a separate JSON file using its name.
+
+    @param region_map, the regions and their respective objects map to be saved
+    """
+    for region in region_map.values():
+        region_data = region.to_dict()
+        region_filename = f"{region.name.lower().replace(' ', '_')}_region.json"
+        region_path = os.path.join(DATA_DIR, region_filename)
+
+        try:
+            os.makedirs(DATA_DIR, exist_ok=True)
+            with open(region_path, "w") as f:
+                json.dump(region_data, f, indent=2)
+            print(f"Saved region data to {region_path}")
+        except Exception as e:
+            print(f"Failed to save region {region.name}: {e}")
+
+    
+def load_all_regions():
+    '''
+    Loads all of the region files that are saved in the data folder
+
+    @returns regions dictionary
+    '''
+    region_files = [
+        "atlantic_region.json",
+        "eastern_pacific_region.json",
+        "central_pacific_region.json"
+    ]
+    regions = []
+    for file in region_files:
+        path = os.path.join(DATA_DIR, file)
+        if os.path.exists(path):
+            with open(path, "r") as f:
+                data = json.load(f)
+                regions.append(Region.from_dict(data))  # You’ll need to implement from_dict
+    return regions
+
+def lookup_storm_by_id(storm_id):
+    '''
+    Gets a specific storm via its id
+    @param str storm_id
+    @return the storm if it exists, None otherwise
+    '''
+    for region in load_all_regions():
+        storm = region.get_storm(id=storm_id)
+        if storm:
+            return storm
+    return None

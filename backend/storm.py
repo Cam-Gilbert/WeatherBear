@@ -63,5 +63,23 @@ class Storm:
             "discussion": self.discussion,
             "shapefile_path": self.shapefile_path
         }
-        
-        
+    
+    @classmethod
+    def from_dict(cls, data):
+        '''
+        Gets data from a storm dictionary and creates a storm object
+        '''
+        return cls(
+            name=data.get("name"),
+            id=data.get("id"),
+            region=data.get("region"),
+            storm_center=data.get("storm_center", ""),
+            movement=data.get("movement", ""),
+            pressure=data.get("pressure", ""),
+            type=data.get("type", ""),
+            wind_speed=data.get("wind_speed", ""),
+            discussion=data.get("discussion", ""),
+            shapefile_path=data.get("shapefile_path", ""),
+            advisories=data.get("advisories", []),
+            local_statements=data.get("local_statements", {})
+        )
